@@ -12,7 +12,7 @@ function AppHeader() {
 
       <div className="flex justify-between items-center p-2 shadow-lg dark:shadow-gray-800 dark:shadow-sm">
         <SidebarTrigger />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <Button
             variant="outline"
             size="icon"

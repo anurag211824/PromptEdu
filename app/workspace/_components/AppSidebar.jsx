@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +23,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AddNewCourseDialog from "./AddNewCourseDialog";
 const SideBarOptions = [
   {
     title: "Dashboard",
@@ -69,7 +71,9 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <Button className="text-white">Create New Course</Button>
+          <AddNewCourseDialog>
+            <Button className="text-white">Create New Course</Button>
+          </AddNewCourseDialog>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupContent>
