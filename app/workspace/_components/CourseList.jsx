@@ -1,14 +1,37 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddNewCourseDialog from "./AddNewCourseDialog";
+import { useUser } from "@clerk/nextjs";
+import CourseCard from "./CourseCard";
 
 function CourseList() {
   const [courseList, setCourseList] = useState([]);
+  const {user} = useUser()
+  const [loading,setLoading] = useState(false)
+  useEffect(()=>{
+    user && GetCourseList()
+  },[user])
+  const GetCourseList = async()=>{
+    setLoading(true)
+   const response = await fetch("/api/courses")
+   const result  = await response.json()
+   if(result.success){
+    setCourseList(result.data)
+     setLoading(false)
+    console.log(result.data);
+    
+   }
+
+  }
+  if(loading){
+    return <p>Loading Courses</p>
+  }
   return (
     <div>
       <h2 className="font-bold text-2xl mt-5">Course List</h2>
+     
       {courseList?.length === 0 ? (
         <div className="mt-2 shadow-md border rounded-xl flex flex-col p-3 justify-center items-center bg-secondary">
           <Image
@@ -25,7 +48,13 @@ function CourseList() {
           </AddNewCourseDialog>
         </div>
       ) : (
-        <div>List of courses</div>
+        <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-4 gap-5">
+          {
+            courseList?.map((course,index)=>{
+              return <CourseCard course = {course} key = {index}/>
+            })
+          }
+        </div>
       )}
     </div>
   );

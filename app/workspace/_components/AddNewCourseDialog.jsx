@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import {
   Dialog,
@@ -15,14 +16,19 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
+  SelectTrigger,  
   SelectValue,
 } from "@/components/ui/select";
-import { Sparkle } from "lucide-react";
+import { Loader2Icon, Sparkle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from "next/navigation";
 
 function AddNewCourseDialog({ children }) {
+  const router = useRouter()
+  const [loading,setLoading] = useState(false)
   const [formData, setFormData] = useState({
+    courseId: uuidv4(),
     course_name: "",
     course_description: "",
     chapters_number: "",
@@ -53,19 +59,46 @@ function AddNewCourseDialog({ children }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted: ", formData);
-   setFormData({
-    course_name: "",
-    course_description: "",
-    chapters_number: "",
-    include_videos: false,
-    difficulty: "",
-    category: "",
-  })
-  };
+    console.log("Form data being sent:", formData);
+    try {
+      setLoading(true)
+      const response = await fetch("api/generate-course-layout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
+      const data = await response.json();
+
+      if (data.success) {
+      setLoading(false)
+      console.log(data.courseId);
+      
+      router.push("/workspace/edit-course/"+data.courseId)
+       
+      
+      } else {
+        console.error("API error:", data);
+        setLoading(false)
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+    }
+
+    setFormData({
+      courseId: uuidv4(),
+      course_name: "",
+      course_description: "",
+      chapters_number: "",
+      include_videos: false,
+      difficulty: "",
+      category: "",
+    });
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -73,10 +106,7 @@ function AddNewCourseDialog({ children }) {
         <DialogHeader>
           <DialogTitle>Create New Course Using AI</DialogTitle>
           <DialogDescription asChild>
-            <form
-              className="flex flex-col gap-2"
-              onSubmit={handleSubmit}
-            >
+            <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
               {/* Course Name */}
               <div className="w-full flex flex-col gap-3 mt-2">
                 <Label htmlFor="course_name">Course Name</Label>
@@ -157,8 +187,11 @@ function AddNewCourseDialog({ children }) {
               </div>
 
               <div className="mt-2">
-                <Button type="submit" className="w-full">
-                  <Sparkle className="mr-2" /> Generate Course
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {
+                    loading ? <Loader2Icon  className="animate-spin"/> :  <Sparkle className="mr-2" /> 
+                  }
+                 Generate Course
                 </Button>
               </div>
             </form>

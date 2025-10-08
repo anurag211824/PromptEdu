@@ -1,0 +1,255 @@
+{
+    "success": true,
+    "CourseContent": [
+        {
+            "YoutubeVideo": [
+                {
+                    "videoId": "ENrzD9HAZK4",
+                    "title": "Node.js Ultimate Beginner’s Guide in 7 Easy Steps"
+                },
+                {
+                    "videoId": "TlB_eWDSMt4",
+                    "title": "Node.js Tutorial for Beginners: Learn Node in 1 Hour"
+                },
+                {
+                    "videoId": "q-xS25lsN3I",
+                    "title": "What is Node.js and how it works (explained in 2 minutes)"
+                },
+                {
+                    "videoId": "BLl32FvcdVM",
+                    "title": "Node Js Tutorial in Hindi 🔥🔥"
+                }
+            ],
+            "courseData": {
+                "chapterName": "Introduction to Node.js and Setup",
+                "topics": [
+                    {
+                        "topic": "What is Node.js? (Backend JavaScript runtime)",
+                        "content": "<h1>What is Node.js?</h1><p>Node.js is an open-source, cross-platform, **JavaScript runtime environment** built on Chrome's V8 JavaScript engine. Essentially, it allows developers to run JavaScript code outside of a web browser, typically on a server or local machine for backend development, command-line tools, and more. It brings the power of JavaScript to the server side.</p>"
+                    },
+                    {
+                        "topic": "Why use Node.js? (Asynchronous, Event-driven, Scalability)",
+                        "content": "<h1>Why Use Node.js? Key Characteristics</h1><ul><li><strong>Asynchronous & Non-blocking I/O:</strong> Node.js handles operations (like reading files or database queries) without waiting for them to complete, allowing it to manage many simultaneous connections efficiently.</li><li><strong>Event-driven Architecture:</strong> It operates on a single-threaded event loop, making it highly performant for I/O-heavy applications.</li><li><strong>Scalability:</strong> Due to its lightweight nature and non-blocking model, Node.js excels in building fast, scalable network applications, especially real-time applications (like chat apps).</li><li><strong>Unified Language:</strong> Using JavaScript for both frontend and backend simplifies development (Full-stack JavaScript).</li></ul>"
+                    },
+                    {
+                        "topic": "Node.js vs. Browser JavaScript",
+                        "content": "<h1>Node.js vs. Browser JavaScript</h1><p>While both run JavaScript, their environments and capabilities differ significantly:</p><table><thead><tr><th>Feature</th><th>Browser JavaScript</th><th>Node.js</th></tr></thead><tbody><tr><td>Environment</td><td>Runs in the browser sandbox.</td><td>Runs on the server/OS via the V8 engine.</td></tr><tr><td>APIs Available</td><td>DOM manipulation, <code>window</code>, <code>fetch</code> (in modern browsers).</td><td>File System (<code>fs</code>), Networking (<code>http</code>), OS interaction.</td></tr><tr><td>Scope</td><td>Client-side logic, UI manipulation.</td><td>Server-side logic, APIs, database interaction.</td></tr></tbody></table>"
+                    },
+                    {
+                        "topic": "Setting up your development environment (Node.js, npm, VS Code)",
+                        "content": "<h1>Development Environment Setup</h1><ol><li><strong>Install Node.js:</strong> Download the LTS (Long Term Support) version from the official Node.js website. This installation automatically includes <code>npm</code> (Node Package Manager).</li><li><strong>Verify Installation:</strong> Open your terminal/command prompt and run:<br><code>node -v</code><br><code>npm -v</code></li><li><strong>Choose an Editor:</strong> Visual Studio Code (VS Code) is highly recommended due to excellent JavaScript support, integrated terminal, and extensions.</li></ol>"
+                    },
+                    {
+                        "topic": "Your first 'Hello World' Node.js application",
+                        "content": "<h1>Creating 'Hello World'</h1><p>Create a file named <code>app.js</code> and add the following content:</p><pre><code>// app.js\nconsole.log(\"Hello World from Node.js!\");</code></pre><p>To run this application, navigate to the file's directory in your terminal and execute:</p><pre><code>node app.js</code></pre><p>Output should display: <code>Hello World from Node.js!</code></p>"
+                    },
+                    {
+                        "topic": "Understanding package.json and basic npm commands",
+                        "content": "<h1>package.json and npm</h1><p><strong><code>package.json</code>:</strong> This file acts as the manifest for your Node.js project. It contains metadata, dependencies, development dependencies, and scripts.</p><p><strong>Basic npm Commands:</strong></p><ul><li><strong><code>npm init</code>:</strong> Initializes a new Node.js project, creating the <code>package.json</code> file.</li><li><strong><code>npm install [package-name]</code> or <code>npm i [package-name]</code>:</strong> Downloads and installs a required package into the <code>node_modules</code> folder and adds it to dependencies in <code>package.json</code>.</li><li><strong><code>npm install</code>:</strong> Installs all dependencies listed in the existing <code>package.json</code> file.</li><li><strong><code>npm start</code> / <code>npm test</code>:</strong> Executes scripts defined in the <code>scripts</code> section of <code>package.json</code>.</li></ul>"
+                    }
+                ]
+            }
+        },
+        {
+            "YoutubeVideo": [
+                {
+                    "videoId": "FSRo41TaHFU",
+                    "title": "Modules in NodeJS"
+                },
+                {
+                    "videoId": "XsGZhbGFUnI",
+                    "title": "Node JS in Hindi #6 Core Modules"
+                },
+                {
+                    "videoId": "q-xS25lsN3I",
+                    "title": "What is Node.js and how it works (explained in 2 minutes)"
+                },
+                {
+                    "videoId": "ooBxSg1Cl1w",
+                    "title": "How node JS works | Engineering side"
+                }
+            ],
+            "courseData": {
+                "chapterName": "Core Node.js Modules and Concepts",
+                "topics": [
+                    {
+                        "topic": "Understanding `require()` and `module.exports`",
+                        "content": "<h2>Understanding `require()` and `module.exports`</h2>\n<p>Node.js uses the CommonJS module system. The <code>require()</code> function is used to import modules (either built-in, local files, or third-party packages). The <code>module.exports</code> object is what the module makes available to other files that import it. If you assign a function or object to <code>module.exports</code>, that is what <code>require()</code> will return.</p>\n\n<h3>Example: Creating a Local Module</h3>\n<pre><code>// mathUtils.js\nconst add = (a, b) => a + b;\nconst subtract = (a, b) => a - b;\n\nmodule.exports = {\n    add: add,\n    subtract: subtract\n};\n\n// mainApp.js\nconst utils = require('./mathUtils');\nconsole.log(utils.add(5, 3)); // Output: 8\n</code></pre>"
+                    },
+                    {
+                        "topic": "File System (`fs`) module: Reading and writing files",
+                        "content": "<h2>File System (`fs`) module: Reading and writing files</h2>\n<p>The <code>fs</code> module allows you to interact with the file system. It offers both synchronous (blocking) and asynchronous (non-blocking, preferred) methods.</p>\n\n<h3>Asynchronous Reading (Preferred)</h3>\n<pre><code>const fs = require('fs');\n\n// Reading a file asynchronously\nfs.readFile('data.txt', 'utf8', (err, data) => {\n    if (err) {\n        console.error('Error reading file:', err);\n        return;\n    }\n    console.log('File Content:', data);\n});\n\n// Writing a file asynchronously\nconst contentToWrite = 'Hello Node.js File System!';\nfs.writeFile('output.txt', contentToWrite, (err) => {\n    if (err) {\n        console.error('Error writing file:', err);\n        return;\n    }\n    console.log('File written successfully!');\n});\n</code></pre>"
+                    },
+                    {
+                        "topic": "Path (`path`) module: Working with file paths",
+                        "content": "<h2>Path (`path`) module: Working with file paths</h2>\n<p>The <code>path</code> module provides utilities for working with file and directory paths in a way that is cross-platform compatible (handling differences between Windows, Linux, and macOS path separators).</p>\n\n<h3>Key Path Methods</h3>\n<ul>\n    <li><code>path.join(...)</code>: Joins path segments intelligently.</li>\n    <li><code>path.resolve(...)</code>: Resolves a sequence of paths or path segments into an absolute path.</li>\n    <li><code>path.basename(path[, ext])</code>: Returns the last portion of a path.</li>\n    <li><code>path.extname(path)</code>: Returns the extension of the path.</li>\n</ul>\n\n<pre><code>const path = require('path');\n\nconst filePath = '/users/node/data.json';\n\nconsole.log(path.basename(filePath));        // Output: data.json\nconsole.log(path.extname(filePath));         // Output: .json\nconsole.log(path.join('src', 'data', 'file.txt')); // Output: src/data/file.txt (or src\\data\\file.txt on Windows)\n</code></pre>"
+                    },
+                    {
+                        "topic": "Operating System (`os`) module: System information",
+                        "content": "<h2>Operating System (`os`) module: System information</h2>\n<p>The <code>os</code> module provides operating system-related utility methods and properties, such as CPU architecture, free memory, hostname, and user information.</p>\n\n<pre><code>const os = require('os');\n\nconsole.log('Platform:', os.platform());\nconsole.log('CPU Architecture:', os.arch());\nconsole.log('Total Memory (GB):', (os.totalmem() / 1024 / 1024 / 1024).toFixed(2));\nconsole.log('Free Memory (MB):', os.freemem() / 1024 / 1024);\nconsole.log('Home Directory:', os.homedir());\n</code></pre>"
+                    },
+                    {
+                        "topic": "HTTP (`http`) module: Building a basic web server",
+                        "content": "<h2>HTTP (`http`) module: Building a basic web server</h2>\n<p>The <code>http</code> module is fundamental for creating web servers and clients in Node.js. The core concept involves creating a server that listens for incoming requests and sends back a response.</p>\n\n<h3>Simple Server Example</h3>\n<pre><code>const http = require('http');\n\nconst server = http.createServer((req, res) => {\n    // Set the response header\n    res.writeHead(200, { 'Content-Type': 'text/plain' });\n\n    // Write the response body\n    if (req.url === '/') {\n        res.end('Welcome to the Homepage!');\n    } else if (req.url === '/about') {\n        res.end('This is a simple Node.js server.');\n    } else {\n        res.writeHead(404, { 'Content-Type': 'text/plain' });\n        res.end('404 Not Found');\n    }\n});\n\nconst PORT = 3000;\nserver.listen(PORT, () => {\n    console.log(`Server running at http://localhost:${PORT}/`);\n});\n</code></pre>"
+                    },
+                    {
+                        "topic": "Event Emitter: Understanding event-driven programming",
+                        "content": "<h2>Event Emitter: Understanding event-driven programming</h2>\n<p>The <code>events</code> module provides the <code>EventEmitter</code> class, which is central to Node.js's asynchronous, non-blocking nature. Objects that inherit from <code>EventEmitter</code> can emit named events, and functions can be attached to listen for those events.</p>\n\n<h3>Usage Pattern</h3>\n<ul>\n    <li><code>.on(eventName, listener)</code>: Attaches a listener function to an event.</li>\n    <li><code>.emit(eventName, [...args])</code>: Synchronously calls every listener registered for the named <code>eventName</code>.</li>\n</ul>\n\n<pre><code>const EventEmitter = require('events');\n\nclass Device extends EventEmitter {}\n\nconst myDevice = new Device();\n\n// Listener 1\nmyDevice.on('dataReceived', (data) => {\n    console.log(`Listener 1 received: ${data}`);\n});\n\n// Listener 2\nmyDevice.on('dataReceived', (data) => {\n    console.log(`Listener 2 processed: ${data.toUpperCase()}`);\n});\n\n// Emitting the event\nmyDevice.emit('dataReceived', 'hello world');\n\n// Output:\n// Listener 1 received: hello world\n// Listener 2 processed: HELLO WORLD\n</code></pre>"
+                    }
+                ]
+            }
+        },
+        {
+            "YoutubeVideo": [
+                {
+                    "videoId": "8zKuNo4ay8E",
+                    "title": "Asynchronous JavaScript &amp; EVENT LOOP from scratch 🔥 | Namaste JavaScript Ep.15"
+                },
+                {
+                    "videoId": "eiC58R16hb8",
+                    "title": "JavaScript Visualized - Event Loop, Web APIs, (Micro)task Queue"
+                },
+                {
+                    "videoId": "670f71LTWpM",
+                    "title": "Asynchronous JavaScript in ~10 Minutes - Callbacks, Promises, and Async/Await"
+                },
+                {
+                    "videoId": "vn3tm0quoqE",
+                    "title": "The Async Await Episode I Promised"
+                }
+            ],
+            "courseData": {
+                "chapterName": "Asynchronous JavaScript & Event Loop",
+                "topics": [
+                    {
+                        "topic": "The nature of Asynchronous JavaScript in Node.js",
+                        "content": "<h1>The Nature of Asynchronous JavaScript in Node.js</h1>\n<p>JavaScript, particularly in environments like Node.js, is inherently single-threaded. This means it can only execute one piece of code at a time. However, to handle operations that take a long time—such as file system access, network requests (I/O), or timers—without blocking the main thread, Node.js relies heavily on asynchronous programming patterns.</p>\n\n<h2>Why Asynchronicity is Crucial in Node.js</h2>\n<ul>\n    <li><strong>Non-blocking Operations:</strong> Ensures that the server remains responsive even when dealing with slow external operations.</li>\n    <li><strong>Efficiency:</strong> Allows the main thread to dispatch long-running tasks and continue processing other requests while waiting for a result.</li>\n    <li><strong>Single-Threaded Execution Model:</strong> The core execution logic runs on one thread (the Event Loop), but I/O and timers are offloaded to system kernels or worker pools.</li>\n</ul>\n\n<h2>Core Concept: Non-blocking I/O</h2>\n<p>When an asynchronous function is called (e.g., <code>fs.readFile()</code>), Node.js doesn't wait for the file to be read. Instead, it registers a callback (or returns a Promise) and immediately moves on to the next line of code. Once the I/O operation completes, the result (and the associated callback/handler) is placed into a queue to be executed later by the Event Loop when the main stack is empty.</p>\n\n<h3>Example Sketch:</h3>\n<pre><code>\nconsole.log('Start');\n\nsetTimeout(() => {\n    console.log('Timeout callback executed'); // Executes later\n}, 0); \n\nconsole.log('End');\n\n// Output: Start, End, Timeout callback executed\n</code></pre>"
+                    },
+                    {
+                        "topic": "Callbacks: Handling asynchronous operations",
+                        "content": "<h1>Callbacks: Handling Asynchronous Operations</h1>\n<p>Callbacks are the traditional foundation of asynchronous programming in JavaScript. A callback function is simply a function passed as an argument to another function, intended to be executed later, usually once the asynchronous operation it was associated with has completed.</p>\n\n<h2>The Structure of a Callback</h2>\n<p>In Node.js convention, callbacks often follow the <strong>Error-First Callback</strong> pattern:</p>\n<pre><code>\nfunction (error, result) {\n    if (error) {\n        // Handle error\n        return;\n    }\n    // Use result\n}\n</code></pre>\n\n<h2>The Problem: Callback Hell (Pyramid of Doom)</h2>\n<p>When one asynchronous operation needs to wait for the result of another, and so on, nesting callbacks deeply becomes complex, hard to read, and difficult to debug and maintain.</p>\n<pre><code>\noperationA(arg1, (errA, resultA) => {\n    if (!errA) {\n        operationB(resultA, (errB, resultB) => {\n            if (!errB) {\n                operationC(resultB, (errC, resultC) => {\n                    // Deeply nested logic...\n                });\n            }\n        });\n    }\n});\n</code></pre>\n<p>This complexity paved the way for Promises and Async/Await.</p>"
+                    },
+                    {
+                        "topic": "Promises: Introduction, `then()`, `catch()`, `finally()`",
+                        "content": "<h1>Promises: Introduction, `then()`, `catch()`, `finally()`</h1>\n<p>A Promise is an object representing the eventual completion (or failure) of an asynchronous operation and its resulting value. Promises solve callback hell by allowing chaining of operations.</p>\n\n<h2>Promise States</h2>\n<ol>\n    <li><strong>Pending:</strong> Initial state; neither fulfilled nor rejected.</li>\n    <li><strong>Fulfilled (Resolved):</strong> Operation completed successfully, yielding a value.</li>\n    <li><strong>Rejected:</strong> Operation failed, resulting in an error.</li>\n</ol>\n\n<h2>Chaining with `.then()`, `.catch()`, and `.finally()`</h2>\n\n<h3><code>.then(onFulfilled, onRejected)</code></h3>\n<p>Used to schedule a callback to run when the promise is fulfilled. It also returns a new Promise, enabling chaining.</p>\n\n<h3><code>.catch(onRejected)</code></h3>\n<p>A syntactic sugar for calling <code>.then(null, onRejected)</code>. It is specifically used to handle rejection/errors occurring anywhere in the preceding chain.</p>\n\n<h3><code>.finally(onSettled)</code></h3>\n<p>Executes a provided function regardless of whether the Promise was fulfilled or rejected. Useful for cleanup operations (like hiding a loading spinner).</p>\n\n<h3>Example Chain:</h3>\n<pre><code>\nfetchData('user/1')\n    .then(user => {\n        console.log('User received:', user.name);\n        return fetchData('posts/' + user.id); // Return a new Promise\n    })\n    .then(posts => {\n        console.log('Posts received:', posts.length);\n    })\n    .catch(error => {\n        console.error('An error occurred in the chain:', error);\n    })\n    .finally(() => {\n        console.log('Operation sequence complete.');\n    });\n</code></pre>"
+                    },
+                    {
+                        "topic": "Async/Await: Modern asynchronous patterns",
+                        "content": "<h1>Async/Await: Modern Asynchronous Patterns</h1>\n<p><code>async</code> and <code>await</code> are syntactic sugar built on top of Promises, making asynchronous code look and behave much more like traditional synchronous code. This significantly improves readability and maintainability.</p>\n\n<h2>The <code>async</code> Keyword</h2>\n<ul>\n    <li>A function declared with <code>async</code> automatically returns a Promise.</li>\n    <li>If the function returns a value, the Promise resolves with that value.</li>\n    <li>If the function throws an error, the Promise rejects with that error.</li>\n</ul>\n\n<h2>The <code>await</code> Keyword</h2>\n<ul>\n    <li>Can only be used inside an <code>async</code> function.</li>\n    <li>Pauses the execution of the <code>async</code> function until the Promise it precedes settles (resolves or rejects).</li>\n    <li>If the Promise resolves, <code>await</code> returns the resolved value.</li>\n    <li>If the Promise rejects, <code>await</code> throws an error (which must be caught using <code>try...catch</code>).</li>\n</ul>\n\n<h2>Error Handling with Try/Catch</h2>\n<p>The standard way to handle errors in an <code>async/await</code> block is using the synchronous <code>try...catch</code> structure.</p>\n\n<h3>Example Implementation:</h3>\n<pre><code>\nasync function processUserData() {\n    try {\n        const user = await fetchUser(1);\n        console.log(`Processing ${user.name}`);\n        \n        const orders = await fetchOrders(user.id);\n        console.log(`Found ${orders.length} orders.`);\n        \n        return { user, orders };\n        \n    } catch (error) {\n        console.error('Failed to fetch data:', error.message);\n        // Re-throw or return a failure state\n        throw new Error('Data processing halted.');\n    }\n}\n\n// Since processUserData is async, it returns a promise:\nprocessUserData().catch(e => console.log('Final Catch:', e.message));\n</code></pre>"
+                    },
+                    {
+                        "topic": "The Node.js Event Loop explained: Phases and operation",
+                        "content": "<h1>The Node.js Event Loop Explained: Phases and Operation</h1>\n<p>The Event Loop is the fundamental mechanism that allows Node.js to perform non-blocking I/O operations despite its single-threaded nature. It continuously checks whether the call stack is empty and, if so, processes tasks waiting in various queues.</p>\n\n<h2>Core Components</h2>\n<ul>\n    <li><strong>Call Stack:</strong> Where synchronous code execution happens.</li>\n    <li><strong>Memory Heap:</strong> Where objects and variables are stored.</li>\n    <li><strong>Callback Queue(s) (Task Queues):</strong> Hold callbacks ready to be executed.</li>\n    <li><strong>Event Loop:</strong> The perpetual process monitoring the stack and queues.</li>\n</ul>\n\n<h2>The Phases of the Event Loop (Libuv Implementation)</h2>\n<p>The Event Loop cycles through specific phases. It must complete all tasks within one phase before moving to the next, repeating this cycle until no more tasks remain.</p>\n<ol>\n    <li><strong>Timers:</strong> Executes callbacks scheduled by <code>setTimeout()</code> and <code>setInterval()</code>.</li>\n    <li><strong>Pending Callbacks:</strong> Executes I/O callbacks deferred to the next loop iteration.</li>\n    <li><strong>Idle, Prepare:</strong> Internal use only.</li>\n    <li><strong>Poll:</strong> Retrieves new I/O events (e.g., network data, file read completion). If I/O events are ready, their callbacks are executed. If the loop is waiting for I/O, it may block here.</li>\n    <li><strong>Check:</strong> Executes callbacks set by <code>setImmediate()</code>.</li>\n    <li><strong>Close Callbacks:</strong> Handles callbacks for closing events (e.g., <code>socket.on('close', ...)</code>).</li>\n</ol>\n\n<h2>Microtasks vs. Macrotasks</h2>\n<p>Crucially, the Event Loop prioritizes certain tasks:</p>\n<ul>\n    <li><strong>Microtasks (Promise Resolutions, <code>process.nextTick()</code>):</strong> These are executed immediately after the current phase completes, *before* moving to the next phase or checking for I/O readiness. <code>process.nextTick()</code> has the highest priority, running before Promises in the same tick.</li>\n    <li><strong>Macrotasks (I/O, Timers, setImmediate):</strong> These belong to the official phases listed above.</li>\n</ul>"
+                    },
+                    {
+                        "topic": "Understanding Non-blocking I/O",
+                        "content": "<h1>Understanding Non-blocking I/O</h1>\n<p>Non-blocking I/O is the cornerstone of Node.js performance. It means that when the application initiates an operation that requires waiting (like reading a large file or querying a database), it does not halt the execution of all other pending tasks.</p>\n\n<h2>Blocking vs. Non-blocking</h2>\n\n<h3>Blocking I/O (Synchronous)</h3>\n<p>The main thread waits (is blocked) until the I/O operation is fully completed by the operating system before moving to the next instruction. This stalls all requests on a server.</p>\n\n<h3>Non-blocking I/O (Asynchronous)</h3>\n<p>The application hands the I/O request off to the underlying system kernel (or a worker thread pool managed by Libuv). The Node.js process immediately continues executing subsequent JavaScript code. Once the OS completes the I/O, it notifies Node.js, and the associated callback is placed in the Event Loop queues for later execution.</p>\n\n<h2>The Role of Libuv</h2>\n<p>Node.js relies on the <code>libuv</code> library (written in C++) to manage asynchronous I/O. Libuv abstracts OS differences and provides:</p>\n<ul>\n    <li><strong>The Event Loop implementation.</strong></li>\n    <li><strong>A Thread Pool:</strong> Used primarily for synchronous, blocking operations like heavy file system access (which cannot be handled purely asynchronously by the OS) or DNS lookups.</li>\n</ul>\n\n<h2>Practical Implications</h2>\n<p>Because I/O operations are offloaded, Node.js can handle thousands of concurrent connections by dedicating very little execution time to waiting. This makes it exceptionally efficient for I/O-bound applications (like APIs or microservices).</p>\n\n<pre><code>\n// Non-blocking File Read (Asynchronous)\nconst fs = require('fs');\n\nconsole.log('1. Reading file...');\nfs.readFile('large_data.txt', (err, data) => {\n    // This callback runs much later, after step 2 is complete\n    console.log('3. File read finished.'); \n});\n\nconsole.log('2. Continuing execution...');\n\n// Output Order: 1, 2, 3\n</code></pre>"
+                    }
+                ]
+            }
+        },
+        {
+            "YoutubeVideo": [
+                {
+                    "videoId": "R11tvGM3nDY",
+                    "title": "Introduction to Express Js | Sigma Web Development Course - Tutorial #88"
+                },
+                {
+                    "videoId": "dyMCr2lD5k0",
+                    "title": "Express JS In 15 Minutes | Introduction To Express JS | Express JS Tutorial | Simplilearn"
+                },
+                {
+                    "videoId": "SccSCuHhOw0",
+                    "title": "Learn Express JS In 35 Minutes"
+                },
+                {
+                    "videoId": "jivyItmsu18",
+                    "title": "Introduction to Express JS | Express &amp; Node.js Tutorials for Beginners"
+                }
+            ],
+            "courseData": {
+                "chapterName": "Introduction to Express.js",
+                "topics": [
+                    {
+                        "topic": "What is Express.js? (Web application framework for Node.js)",
+                        "content": "<h1>What is Express.js?</h1>\n<p>Express.js is a minimal and flexible Node.js web application framework that provides a robust set of features for building web and mobile applications. It is the de facto standard server framework for Node.js.</p>\n\n<h2>Key Characteristics:</h2>\n<ul>\n    <li><strong>Minimalist:</strong> It provides a thin layer of fundamental web application functionalities.</li>\n    <li><strong>Unopinionated:</strong> It doesn't enforce specific directory structures or architectural patterns, giving developers flexibility.</li>\n    <li><strong>Robust Routing:</strong> Excellent capabilities for defining how your application responds to client requests to specific endpoints (routes).</li>\n    <li><strong>Middleware Support:</strong> It uses middleware functions to handle request processing chains.</li>\n</ul>\n\n<h2>Why use Express.js?</h2>\n<p>Node.js is powerful for I/O heavy operations, but it lacks built-in standardized methods for common web server tasks like routing, session management, or template rendering. Express bridges this gap, making the development of scalable server-side applications much faster and more structured.</p>"
+                    },
+                    {
+                        "topic": "Setting up an Express.js project",
+                        "content": "<h1>Setting up an Express.js Project</h1>\n\n<p>Setting up an Express project usually involves initializing a Node.js project and installing the Express package.</p>\n\n<h2>Steps:</h2>\n<ol>\n    <li><strong>Initialize Node.js Project:</strong>\n        <pre><code>npm init -y</code></pre>\n        <p>This creates a <code>package.json</code> file.</p>\n    </li>\n    <li><strong>Install Express:</strong>\n        <pre><code>npm install express</code></pre>\n        <p>This installs Express as a dependency.</p>\n    </li>\n    <li><strong>Create the Server File (e.g., <code>server.js</code> or <code>app.js</code>):</strong>\n        <pre><code>// server.js\nconst express = require('express');\nconst app = express();\nconst port = 3000;\n\n// Define a basic route\napp.get('/', (req, res) => {\n  res.send('Hello World from Express!');\n});\n\n// Start the server\napp.listen(port, () => {\n  console.log(`Server listening at http://localhost:${port}`);\n});</code></pre>\n    </li>\n    <li><strong>Run the Server:</strong>\n        <pre><code>node server.js</code></pre>\n    </li>\n</ol>"
+                    },
+                    {
+                        "topic": "Basic routing: Handling different HTTP methods and URLs",
+                        "content": "<h1>Basic Routing</h1>\n<p>Routing is the mechanism by which Express directs HTTP requests to the appropriate handler functions based on the request URL and HTTP method (GET, POST, PUT, DELETE, etc.).</p>\n\n<h2>Common HTTP Methods:</h2>\n<ul>\n    <li><code>app.get(path, handler)</code>: For retrieving data.</li>\n    <li><code>app.post(path, handler)</code>: For submitting new data.</li>\n    <li><code>app.put(path, handler)</code>: For updating existing data entirely.</li>\n    <li><code>app.delete(path, handler)</code>: For removing data.</li>\n</ul>\n\n<h2>Examples:</h2>\n<pre><code>// Handling GET request to the root\napp.get('/', (req, res) => {\n    res.send('Welcome to the homepage.');\n});\n\n// Handling POST request to /users\napp.post('/users', (req, res) => {\n    // Logic to save a new user\n    res.status(201).send('User created successfully.');\n});\n\n// Route parameters (e.g., /users/5)\napp.get('/users/:id', (req, res) => {\n    const userId = req.params.id;\n    res.send(`Fetching details for User ID: ${userId}`);\n});</code></pre>\n\n<h2>Route Chaining:</h2>\n<p>You can chain handlers for the same route:</p>\n<pre><code>app.route('/data')\n    .get((req, res) => res.send('GET request on /data'))\n    .post((req, res) => res.send('POST request on /data'));</code></pre>"
+                    },
+                    {
+                        "topic": "Middleware: Concepts and common uses (e.g., body-parser)",
+                        "content": "<h1>Middleware in Express.js</h1>\n\n<p>Middleware functions have access to the request object ($\texttt{req}$), the response object ($\texttt{res}$), and the next middleware function in the application’s request-response cycle ($\texttt{next}$). They are the backbone of Express applications.</p>\n\n<h2>The $\texttt{next}$ function:</h2>\n<p>If a middleware function does not end the request-response cycle (by sending a response), it <em>must</em> call $\texttt{next()}$ to pass control to the next middleware or route handler.</p>\n\n<h2>Types of Middleware:</h2>\n<ol>\n    <li><strong>Application-level Middleware:</strong> Applied globally using $\texttt{app.use()}$.</li>\n    <li><strong>Router-level Middleware:</strong> Applied to specific routes or route groups.</li>\n    <li><strong>Error-handling Middleware:</strong> Functions with four arguments ($\texttt{err, req, res, next}$).</li>\n</ol>\n\n<h2>Common Uses & $\texttt{body-parser}$ (now integrated):</h2>\n<p>Middleware is used for tasks like logging, authentication, data validation, and parsing request bodies.</p>\n\n<pre><code>// Logging middleware (Application-level)\napp.use((req, res, next) => {\n    console.log(`Request received: ${req.method} ${req.url}`);\n    next(); // Move to the next function\n});\n\n// Parsing JSON bodies (body-parser functionality is now built into Express):\napp.use(express.json()); // Parses incoming requests with JSON payloads\napp.use(express.urlencoded({ extended: true })); // Parses incoming requests with urlencoded payloads\n\napp.post('/data', (req, res) => {\n    // req.body is available because express.json() ran before this route handler\n    res.send(`Received data for key: ${req.body.key}`);\n});</code></pre>"
+                    },
+                    {
+                        "topic": "Request and Response objects (`req`, `res`)",
+                        "content": "<h1>The $\texttt{req}$ and $\texttt{res}$ Objects</h1>\n\n<p>Every route handler and middleware function receives the Request ($\texttt{req}$) and Response ($\texttt{res}$) objects, which contain all information about the incoming request and methods to construct the outgoing response.</p>\n\n<h2>The Request Object ($\texttt{req}$):</h2>\n<ul>\n    <li>$\texttt{req.method}$: The HTTP method used (e.g., 'GET').</li>\n    <li>$\texttt{req.url}$ or $\texttt{req.path}$: The path of the request URL.</li>\n    <li>$\texttt{req.headers}$: An object containing request headers.</li>\n    <li>$\texttt{req.query}$: Object containing the query string parameters (e.g., ?sort=name).</li>\n    <li>$\texttt{req.params}$: Object containing route parameters (e.g., /users/:id).</li>\n    <li>$\texttt{req.body}$: Object containing the request body, parsed by middleware like $\texttt{express.json()}$.</li>\n</ul>\n\n<h2>The Response Object ($\texttt{res}$):</h2>\n<p>Used to send data back to the client.</p>\n<ul>\n    <li>$\texttt{res.send(body)}$: Sends various types of responses (HTML, JSON, text).</li>\n    <li>$\texttt{res.json(obj)}$: Sends a JSON response by setting the $\texttt{Content-Type}$ header to $\texttt{application/json}$.</li>\n    <li>$\texttt{res.status(code)}$: Sets the HTTP status code for the response.</li>\n    <li>$\texttt{res.type(type)}$: Sets the response $\texttt{Content-Type}$.</li>\n    <li>$\texttt{res.sendFile(path)}$: Sends a file as the response.</li>\n    <li>$\texttt{res.end()}$: Signals to the server that the response headers and body have been sent.</li>\n</ul>\n\n<pre><code>app.get('/items/:id', (req, res) => {\n    const itemId = req.params.id;\n    // Set status code and send JSON\n    res.status(200).json({\n        id: itemId,\n        data: `Item ${itemId} details`\n    });\n});</code></pre>"
+                    },
+                    {
+                        "topic": "Error handling in Express.js",
+                        "content": "<h1>Error Handling in Express.js</h1>\n\n<p>Express handles errors differently than standard Node.js callbacks. It uses a special signature for error-handling middleware.</p>\n\n<h2>Error-Handling Middleware:</h2>\n<p>An error-handling middleware function is defined by having <strong>four arguments</strong>: $\texttt{(err, req, res, next)}$ instead of the usual three ($\texttt{req, res, next}$).</p>\n\n<pre><code>// 1. Define the error handler (must be the LAST middleware loaded)\napp.use((err, req, res, next) => {\n    console.error(err.stack);\n    \n    // Determine status code, default to 500\n    const statusCode = err.statusCode || 500;\n    \n    res.status(statusCode).send({\n        message: 'Something broke!',\n        error: process.env.NODE_ENV === 'production' ? 'Server Error' : err.message\n    });\n});</code></pre>\n\n<h2>Propagating Errors:</h2>\n<p>To pass an error from a standard middleware or route handler to the error handler, you call $\texttt{next()}$ with the error object as its argument:</p>\n\n<pre><code>app.get('/critical', (req, res, next) => {\n    const data = fetchDataSync(); // Assume this might fail\n    \n    if (!data) {\n        // Create an error object\n        const customError = new Error('Data fetch failed');\n        customError.statusCode = 404;\n        \n        // Pass the error to the dedicated error handler\n        return next(customError);\n    }\n    \n    res.send('Data found');\n});</code></pre>\n\n<p><strong>Crucially:</strong> When an error is passed to $\texttt{next()}$, Express skips all subsequent standard middleware and route handlers and immediately jumps to the first defined error-handling middleware.</p>"
+                    }
+                ]
+            }
+        },
+        {
+            "YoutubeVideo": [
+                {
+                    "videoId": "-MTSQjw5DrM",
+                    "title": "RESTful APIs in 100 Seconds // Build an API from Scratch with Node.js Express"
+                },
+                {
+                    "videoId": "uNCrMvkPUAE",
+                    "title": "Building REST API&#39;s using Node and Express.js"
+                },
+                {
+                    "videoId": "fgTGADljAeg",
+                    "title": "Build A REST API With Node.js, Express, &amp; MongoDB - Quick"
+                },
+                {
+                    "videoId": "pKd0Rpw7O48",
+                    "title": "How to build a REST API with Node js &amp; Express"
+                }
+            ],
+            "courseData": {
+                "chapterName": "Building a Simple REST API with Express",
+                "topics": [
+                    {
+                        "topic": "Understanding RESTful API principles",
+                        "content": "<h2>Understanding RESTful API Principles</h2>\n<p>Representational State Transfer (REST) is an architectural style for designing networked applications. A RESTful API adheres to several key constraints:</p>\n<ul>\n  <li><strong>Client-Server Architecture:</strong> Separation of concerns between the client (user interface) and the server (data storage and processing).</li>\n  <li><strong>Statelessness:</strong> Each request from the client to the server must contain all the information needed to understand the request. The server should not store any client context between requests.</li>\n  <li><strong>Cacheable:</strong> Responses must explicitly state whether they can be cached by the client to improve performance.</li>\n  <li><strong>Layered System:</strong> The architecture can be composed of multiple layers (e.g., load balancers, proxies, firewalls) without affecting client-server communication.</li>\n  <li><strong>Uniform Interface:</strong> The most critical constraint, promoting decoupling by using standard methods and resource identification.</li>\n  <li><strong>Resource Identification:</strong> Resources (like users, products) are identified using URIs (Uniform Resource Identifiers).</li>\n</ul>\n<p>We primarily focus on the <strong>HTTP Methods (Verbs)</strong> to perform standard CRUD (Create, Read, Update, Delete) operations on resources:</p>\n<ul>\n  <li><strong>GET:</strong> Retrieve a resource or a collection of resources (Read).</li>\n  <li><strong>POST:</strong> Create a new resource (Create).</li>\n  <li><strong>PUT/PATCH:</strong> Update an existing resource (Update). (PUT replaces the entire resource; PATCH updates parts of it).</li>\n  <li><strong>DELETE:</strong> Remove a resource (Delete).</li>\n</ul>"
+                    },
+                    {
+                        "topic": "Designing API endpoints (GET, POST, PUT, DELETE)",
+                        "content": "<h2>Designing API Endpoints</h2>\n<p>Good REST API design relies on clear, intuitive, and hierarchical resource paths (URIs). Endpoints should be named using nouns (resources), not verbs.</p>\n\n<h3>Resource Naming Convention (Plural Nouns)</h3>\n<p>If our resource is 'book', the endpoints should look like this:</p>\n\n<table>\n  <thead>\n    <tr>\n      <th>Operation</th>\n      <th>HTTP Method</th>\n      <th>Endpoint URI</th>\n      <th>Purpose</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>List all books</td>\n      <td><code>GET</code></td>\n      <td><code>/api/books</code></td>\n      <td>Retrieves an array of all book resources.</td>\n    </tr>\n    <tr>\n      <td>Get a specific book</td>\n      <td><code>GET</code></td>\n      <td><code>/api/books/:id</code></td>\n      <td>Retrieves the book with the specified ID.</td>\n    </tr>\n    <tr>\n      <td>Create a new book</td>\n      <td><code>POST</code></td>\n      <td><code>/api/books</code></td>\n      <td>Creates a new book resource using data provided in the request body.</td>\n    </tr>\n    <tr>\n      <td>Update an existing book</td>\n      <td><code>PUT</code> or <code>PATCH</code></td>\n      <td><code>/api/books/:id</code></td>\n      <td>Updates the book identified by the ID.</td>\n    </tr>\n    <tr>\n      <td>Delete a book</td>\n      <td><code>DELETE</code></td>\n      <td><code>/api/books/:id</code></td>\n      <td>Removes the book identified by the ID.</td>\n    </tr>\n  </tbody>\n</table>"
+                    },
+                    {
+                        "topic": "Creating routes for resource management",
+                        "content": "<h2>Creating Routes with Express</h2>\n<p>Express simplifies handling incoming HTTP requests by defining specific routes (paths) matched with handler functions.</p>\n\n<pre><code>// 1. Setup Express\nconst express = require('express');\nconst app = express();\n\n// Middleware to parse JSON bodies (essential for POST/PUT)\napp.use(express.json());\n\n// Dummy in-memory data store\nlet books = [\n    { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' }\n];\nlet nextId = 2;\n\n// 2. GET route: Retrieve all books\napp.get('/api/books', (req, res) => {\n    res.status(200).json(books);\n});\n\n// 3. POST route: Create a new book\napp.post('/api/books', (req, res) => {\n    const newBook = {\n        id: nextId++,\n        title: req.body.title,\n        author: req.body.author\n    };\n    if (!newBook.title || !newBook.author) {\n        return res.status(400).send({ message: 'Title and author are required.' });\n    }\n    books.push(newBook);\n    // Standard practice for POST success is returning 201 Created\n    res.status(201).json(newBook);\n});\n\n// 4. DELETE route: Delete a book\napp.delete('/api/books/:id', (req, res) => {\n    const id = parseInt(req.params.id);\n    const initialLength = books.length;\n    books = books.filter(book => book.id !== id);\n\n    if (books.length === initialLength) {\n        return res.status(404).send({ message: 'Book not found.' });\n    }\n    // Standard practice for successful deletion is 204 No Content\n    res.status(204).send(); \n});\n\n// Start server (usually done after all routes)\n// app.listen(3000, () => { console.log('Server running on port 3000'); });\n</code></pre>"
+                    },
+                    {
+                        "topic": "Handling request parameters and query strings",
+                        "content": "<h2>Handling Parameters and Queries in Express</h2>\n<p>Express provides distinct ways to access different parts of an incoming request:</p>\n\n<h3>1. Request Parameters (URL Segments)</h3>\n<p>Used for identifying a specific resource, defined in the path using a colon (e.g., <code>/books/:id</code>). Accessed via <code>req.params</code>.</p>\n\n<pre><code>// Example GET route: /api/books/5\napp.get('/api/books/:id', (req, res) => {\n    const id = parseInt(req.params.id); \n    // Note: req.params values are always strings, often requiring parseInt or Number()\n    \n    const book = books.find(b => b.id === id);\n    \n    if (!book) {\n        return res.status(404).json({ message: `Book with ID ${id} not found.` });\n    }\n    res.status(200).json(book);\n});\n</code></pre>\n\n<h3>2. Query Strings (Optional Filtering/Pagination)</h3>\n<p>Used for optional filtering, sorting, or pagination. They appear after the <code>?</code> in the URL (e.g., <code>/api/books?author=Fitzgerald&limit=10</code>). Accessed via <code>req.query</code>.</p>\n\n<pre><code>// Example GET route: /api/books?author=X\napp.get('/api/books', (req, res) => {\n    let results = books;\n    \n    // Check for the 'author' query parameter\n    if (req.query.author) {\n        results = results.filter(book => \n            book.author.toLowerCase() === req.query.author.toLowerCase()\n        );\n    }\n    \n    // Check for 'limit' query parameter (for pagination simulation)\n    if (req.query.limit) {\n        const limit = parseInt(req.query.limit);\n        results = results.slice(0, limit);\n    }\n\n    res.status(200).json(results);\n});\n</code></pre>"
+                    },
+                    {
+                        "topic": "Implementing basic data storage (in-memory array or JSON file)",
+                        "content": "<h2>Data Storage Strategies</h2>\n<p>For a simple API, we often start with in-memory storage. However, a production-ready setup requires persistent storage.</p>\n\n<h3>1. In-Memory Array (Volatile)</h3>\n<p>As demonstrated earlier, data is stored directly in a JavaScript variable. <strong>Issue:</strong> All data is lost when the server restarts.</p>\n\n<h3>2. JSON File Persistence (Simple Persistence)</h3>\n<p>This involves reading and writing the entire data store to a local file (e.g., <code>db.json</code>) on startup and before any write operation.</p>\n\n<pre><code>const fs = require('fs');\nconst DATA_FILE = './data/books.json';\n\n// Load data on startup\nfunction loadData() {\n    try {\n        const data = fs.readFileSync(DATA_FILE, 'utf8');\n        return JSON.parse(data);\n    } catch (error) {\n        // If file doesn't exist or is empty, return an empty array\n        console.warn('Data file not found or corrupted. Starting with empty array.');\n        return []; \n    }\n}\n\n// Save data after modification\nfunction saveData(data) {\n    try {\n        fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');\n    } catch (error) {\n        console.error('Error writing data to file:', error);\n    }\n}\n\n// In your route handler (e.g., POST):\n/*\n    books.push(newBook);\n    saveData(books);\n    res.status(201).json(newBook);\n*/\n</code></pre>\n<p><strong>Note:</strong> For real applications, use dedicated databases like MongoDB (NoSQL) or PostgreSQL (SQL) managed by ORMs/ODMs (like Mongoose or Sequelize) to handle concurrency and transactions.</p>"
+                    },
+                    {
+                        "topic": "Postman or Insomnia for API testing",
+                        "content": "<h2>API Testing Tools: Postman & Insomnia</h2>\n<p>Manually testing endpoints in the browser only works for simple <code>GET</code> requests. Tools like Postman or Insomnia allow developers to send complex requests (POST, PUT) with custom headers, bodies, and authentication.</p>\n\n<h3>Key Testing Steps:</h3>\n<ol>\n  <li><strong>Set the HTTP Method:</strong> Select GET, POST, PUT, or DELETE from the dropdown menu.</li>\n  <li><strong>Set the Request URL:</strong> Input the exact endpoint (e.g., <code>http://localhost:3000/api/books</code>).</li>\n  <li><strong>Set the Body (for POST/PUT):</strong>\n    <ul>\n      <li>Select the <strong>Body</strong> tab.</li>\n      <li>Choose the <strong><code>raw</code></strong> radio button.</li>\n      <li>Select <strong><code>JSON</code></strong> from the format dropdown.</li>\n      <li>Enter the JSON payload (e.g., <code>{\"title\": \"1984\", \"author\": \"George Orwell\"}</code>).</li>\n    </ul>\n  </li>\n  <li><strong>Set Headers (If necessary):</strong> Ensure Express middleware is working by setting <code>Content-Type: application/json</code> (though Express's <code>app.use(express.json())</code> often handles this implicitly for parsing).</li>\n  <li><strong>Send and Verify:</strong> Click 'Send' and inspect the <strong>Response Body</strong> and the <strong>Status Code</strong> (e.g., 200 OK, 201 Created, 404 Not Found).</li>\n</ol>\n<p>These tools are essential for verifying that your routes handle data correctly and return the appropriate HTTP status codes.</p>"
+                    },
+                    {
+                        "topic": "Deployment considerations (brief overview)",
+                        "content": "<h2>Deployment Considerations (Brief Overview)</h2>\n<p>Moving your API from your local machine to the public internet requires addressing several key areas:</p>\n\n<h3>1. Environment Variables</h3>\n<p>Sensitive configuration (like database connection strings, secret keys) should <strong>never</strong> be hardcoded. Use environment variables (e.g., <code>process.env.PORT</code>, <code>process.env.DATABASE_URL</code>).</p>\n\n<h3>2. Port Handling</h3>\n<p>On development, we use a fixed port (e.g., 3000). In production, the hosting environment (like Heroku, Vercel, AWS) dictates the port, usually exposed via the <code>PORT</code> environment variable. Your Express app must listen to this variable:</p>\n<pre><code>const PORT = process.env.PORT || 3000;\napp.listen(PORT, () => { /* ... */ });</code></pre>\n\n<h3>3. Production Optimization</h3>\n<ul>\n    <li><strong>Security:</strong> Implement middleware like <code>helmet</code> to set essential security headers.</li>\n    <li><strong>Logging:</strong> Use production-ready loggers (like Winston) instead of console logs.</li>\n    <li><strong>Reverse Proxy/Load Balancer:</strong> Tools like Nginx or Apache are often placed in front of the Node.js application to handle SSL termination and static file serving efficiently.</li>\n    <li><strong>Process Management:</strong> Use tools like PM2 to keep your Node.js process alive, automatically restart it upon failure, and manage clustering for better performance.</li>\n</ul>"
+                    }
+                ]
+            }
+        }
+    ],
+    "courseName": "Node Js"
+}
