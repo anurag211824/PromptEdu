@@ -6,12 +6,12 @@ import React, { useContext } from "react";
 import { Moon, Sun } from "lucide-react";
 import ThemeProvider, { ThemeContext } from "@/contexts/ThemeContext";
 
-function AppHeader() {
+function AppHeader({hideSidebar = false}) {
   const { themeMode,toggleTheme } = useContext(ThemeContext);
   return (
 
       <div className="flex justify-between items-center p-2 shadow-lg dark:shadow-gray-800 dark:shadow-sm">
-        <SidebarTrigger />
+       {!hideSidebar && <SidebarTrigger />}
         <div className="flex items-center gap-4">
           <Button
             variant="outline"

@@ -1,7 +1,10 @@
 "use client";
 import { createContext, useEffect, useState } from "react";
 
-export const ThemeContext = createContext();
+export const ThemeContext = createContext({
+  themeMode: "light",
+  toggleTheme: () => {}
+});
 
 const ThemeProvider = ({ children }) => {
   const [themeMode, setThemeMode] = useState("light");

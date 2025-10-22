@@ -1,12 +1,16 @@
 'use client'
 import { Button } from "@/components/ui/button";
-import { Book, Clock, Loader2Icon, Settings, Sparkle, TrendingUp } from "lucide-react";
+import { Book, Clock, Loader2Icon, PlayCircle, Settings, Sparkle, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 
-function CourseInfo({ course }) {
+
+function CourseInfo({ course,viewCourse }) {
+  console.log(course);
+  
   const courseLayout = course?.courseJson.course;
   const [loading, setLoading] = useState(false);
   const router = useRouter()
@@ -56,7 +60,7 @@ function CourseInfo({ course }) {
         <p className="line-clamp-2 text-gray-500">
           {courseLayout?.course_description}
         </p>
-        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
             <div className="flex gap-5 items-center p-3 rounded-lg shadow-sm shadow-blue-400">
               <Clock className="text-blue-500" />
@@ -82,12 +86,16 @@ function CourseInfo({ course }) {
               </section>
             </div>
           </div>
-          <Button onClick={GenerateCourseContent} className="w-full text-white  text-[17px]">
-             {
-                    loading ? <Loader2Icon  className="animate-spin"/> :   <Settings />
-                  }
-            Generate Content
-          </Button>
+          {!viewCourse ? (
+            <Button onClick={GenerateCourseContent} className="w-full text-white  text-[17px]">
+              {loading ? <Loader2Icon className="animate-spin" /> : <Settings />}
+              Generate Content
+            </Button>
+          ) : (
+            <Link href={'/course/'+course?.cid}>
+              <Button className="w-full"><PlayCircle />Continue Learning</Button>
+            </Link>
+          )}
         </div>
       </div>
 

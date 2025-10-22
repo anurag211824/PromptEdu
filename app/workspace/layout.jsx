@@ -9,12 +9,14 @@ function WorkSpacelayout({ children }) {
   return (
     <SidebarProvider>
       <AppSidebar />
+
       <div className="w-full">
         <ThemeProvider>
           <AppHeader />
         </ThemeProvider>
         {children}
       </div>
+   
     </SidebarProvider>
   );
 }
