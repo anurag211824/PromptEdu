@@ -7,7 +7,7 @@ import ChapterContent from "../_components/ChapterContent";
 import { useParams, useRouter } from "next/navigation";
 import SelectedChapterIndexProvider from "@/contexts/SelectedChapterIndex";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Book, Menu, X } from "lucide-react";
 
 function Course() {
   const { courseId } = useParams();
@@ -38,7 +38,8 @@ function Course() {
             className="ml-2"
             onClick={() => router.push("/workspace/view-course/" + courseId)}
           >
-            Go to Course
+            Back
+          <Book />
           </Button>
 
           {/* Mobile Sidebar Toggle Button */}
@@ -76,7 +77,7 @@ function Course() {
 
           {/* Scrollable Content */}
           <div className="ml-0 md:ml-80 w-full flex-1 overflow-y-auto h-[calc(100vh-60px)] hide-scrollbar">
-            <ChapterContent courseInfo={courseInfo} />
+            <ChapterContent courseInfo={courseInfo} refreshData={()=>GetEnrolledCourseById()} />
           </div>
         </div>
       </ThemeProvider>

@@ -47,10 +47,10 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const user = await currentUser();
-   const { searchParams } = new URL(req.url);
-  const courseId = searchParams.get("courseId");
+    const { searchParams } = new URL(req.url);
+    const courseId = searchParams.get("courseId");
     if (courseId) {
-       const result = await db
+      const result = await db
         .select()
         .from(coursesTable)
         .innerJoin(
@@ -58,10 +58,15 @@ export async function GET(req) {
           eq(coursesTable.id, enrollCourseTable.courseId)
         )
         .where(
-          and(eq(enrollCourseTable.userEmail, user.primaryEmailAddress.emailAddress),
-           eq(coursesTable.cid, courseId))
-        )
-        
+          and(
+            eq(
+              enrollCourseTable.userEmail,
+              user.primaryEmailAddress.emailAddress
+            ),
+            eq(coursesTable.cid, courseId)
+          )
+        );
+
       return NextResponse.json({ success: true, data: result });
     } else {
       const result = await db
@@ -83,3 +88,39 @@ export async function GET(req) {
     return NextResponse.json({ success: false, data: error });
   }
 }
+
+export async function PUT(req) {
+  try {
+    const { courseId, completedChapters } = await req.json();
+    const user = await currentUser();
+
+    console.log("BODY RECEIVED:", { courseId, completedChapters });
+
+    if (!user?.primaryEmailAddress?.emailAddress) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
+    // ✅ Ensure completedChapters is always an array
+    const safeCompletedChapters = Array.isArray(completedChapters)
+      ? completedChapters
+      : [completedChapters];
+
+    const result = await db
+      .update(enrollCourseTable)
+      .set({ completedChapters: safeCompletedChapters })
+      .where(
+        and(
+          eq(enrollCourseTable.courseId, courseId),
+          eq(enrollCourseTable.userEmail, user.primaryEmailAddress.emailAddress)
+        )
+      )
+      .returning();
+
+    return NextResponse.json({ success: true, data: result });
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
+  }
+}
+
