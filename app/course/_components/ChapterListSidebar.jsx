@@ -10,9 +10,12 @@ import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
 
 function ChapterListSidebar({ courseInfo }) {
   const { setSelectedChapterIndex } = useContext(SelectedChapterIndex);
-  console.log(courseInfo);
-  const completedChapterArray =   courseInfo?.[0]?.
-enrollCourse?.completedChapters;
+console.log(courseInfo);
+
+// Safely handle completedChapters - ensure it's always an array
+const completedChapterArray = Array.isArray(courseInfo?.[0]?.enrollCourse?.completedChapters)
+  ? courseInfo[0].enrollCourse.completedChapters
+  : [];
 
   const rawContent =
     courseInfo?.[0]?.courses?.courseContent ??
@@ -42,9 +45,7 @@ enrollCourse?.completedChapters;
 
   return (
     <>
-      <div
-        
-      >
+      <div>
         <div className="flex flex-row items-center justify-between">
           <h2 className="my-3 font-bold text-xl">
             Chapters ({courseContent.length})
@@ -79,7 +80,6 @@ enrollCourse?.completedChapters;
                 <AccordionItem
                   onClick={() => {
                     setSelectedChapterIndex(cIndex);
-
                   }}
                   key={chapterKey}
                   value={String(title) + "-" + chapterKey}
@@ -102,8 +102,11 @@ enrollCourse?.completedChapters;
                             t?.id ?? t?.cid ?? `${chapterKey}-topic-${tIndex}`;
 
                           return (
-                            <div key={topicKey} className={`${completedChapterArray.includes(cIndex) ?  "bg-green-500 text-green-900"
-                                  : "" } p-2 border rounded`}>
+                            <div key={topicKey} className={`${
+                              completedChapterArray.includes(cIndex) 
+                                ? "bg-green-500 text-green-900"
+                                : ""
+                            } p-2 border rounded`}>
                               <h3 className="font-medium">
                                 {topicTitle ?? `Topic ${tIndex + 1}`}
                               </h3>
