@@ -3,13 +3,12 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import UserProvider from "@/contexts/UserContext";
 import { Toaster } from "sonner";
-
+import ThemeProvider from "@/contexts/ThemeContext";
 
 const kumbhSans = Kumbh_Sans({
   variable: "--font-kumbh-sans",
   subsets: ["latin"],
 });
-
 
 export const metadata = {
   title: "PromptEdu",
@@ -24,8 +23,10 @@ export default function RootLayout({ children }) {
           <link rel="icon" href="/faavicon.png" />
         </head>
         <body className={kumbhSans.className}>
-          <UserProvider>{children}</UserProvider>
-           <Toaster />
+          <ThemeProvider>
+            <UserProvider>{children}</UserProvider>
+            <Toaster />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

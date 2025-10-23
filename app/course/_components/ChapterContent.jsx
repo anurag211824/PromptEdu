@@ -1,9 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2Icon, X } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function YouTubeEmbed({ videoId }) {
   return (
@@ -19,11 +20,11 @@ function YouTubeEmbed({ videoId }) {
   );
 }
 
-function ChapterContent({ courseInfo, refreshData }) { 
+function ChapterContent({ courseInfo, refreshData }) {
   console.log(courseInfo);
   const enrollCourse = courseInfo?.[0]?.enrollCourse;
   console.log(enrollCourse);
-
+  const [loading,setLoading] = useState(false)
   const { selectedChapterIndex, setSelectedChapterIndex } =
     useContext(SelectedChapterIndex);
   const rawContent =
@@ -75,48 +76,88 @@ function ChapterContent({ courseInfo, refreshData }) {
       const newCompleted = Array.from(
         new Set([...existing, selectedChapterIndex])
       );
-
+       setLoading(true)
       const response = await fetch("/api/enroll-course", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-      body: JSON.stringify({  courseId: Number(courseInfo[0]?.courses?.id), completedChapters: newCompleted })
-
+        body: JSON.stringify({
+          courseId: Number(courseInfo[0]?.courses?.id),
+          completedChapters: newCompleted,
+        }),
       });
 
       const data = await response.json();
       console.log("Update Response:", data);
 
       if (data.success) {
-        await refreshData(); 
+        toast.success("Marked Completed");
+        setLoading(false)
+        await refreshData();
+        
       } else {
         console.error("Failed to update:", data.error);
       }
     } catch (error) {
+      setLoading(false)
       console.error("Error updating chapter:", error);
     }
   };
+  const markChapterInComplted = async () => {
+    try {
+      const existing = Array.isArray(enrollCourse?.completedChapters)
+        ? enrollCourse.completedChapters
+        : [];
 
+      const newCompleted = existing.filter(
+        (item) => item != selectedChapterIndex
+      );
+     setLoading(true)
+      const response = await fetch("/api/enroll-course", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId: Number(courseInfo[0]?.courses?.id),
+          completedChapters: newCompleted,
+        }),
+      });
+
+      const data = await response.json();
+      console.log("Update Response:", data);
+
+      if (data.success) {
+         toast.success("Marked InCompleted");
+        setLoading(false)
+        await refreshData();
+       
+      } else {
+        console.error("Failed to update:", data.error);
+      }
+    } catch (error) {
+      setLoading(false)
+      console.error("Error updating chapter:", error);
+    }
+  };
   return (
     <div className="flex flex-col">
       <div className="p-5">
         <div className="flex flex-col md:flex-row items-center justify-between ">
-          <h2 className="text-2xl font-bold">
+          <h2 className="text-2xl font-bold mb-5">
             {courseContent[selectedChapterIndex]?.courseData?.chapterName}
           </h2>
-          <Button
-          className=" w-full md:w-auto"
-            disabled={enrollCourse?.completedChapters?.includes(
-              selectedChapterIndex
-            )}
-            onClick={markChapterComplted}
-          >
-            <CheckCircle className="mr-2" />
-            {enrollCourse?.completedChapters?.includes(selectedChapterIndex)
-              ? "Completed ✅"
-              : "Mark Completed"}
-          </Button>
+
+          {enrollCourse?.completedChapters?.includes(selectedChapterIndex) ? (
+            <Button className="w-full md:w-auto" onClick={markChapterInComplted} variant="outline">
+              {loading ? <Loader2Icon className="animate-spin"/>: <X className="mr-2" /> }Mark Incomplete
+            </Button>
+          ) : (
+            <Button className="w-full md:w-auto" onClick={markChapterComplted}>
+             {loading ?<Loader2Icon className="animate-spin"/> : <CheckCircle className="mr-2" /> }  Mark Complete
+            </Button>
+          )}
         </div>
 
         <h2 className="my-2">Related Videos 📽️</h2>

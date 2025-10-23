@@ -5,6 +5,7 @@ import { UserButton } from "@clerk/nextjs";
 import React, { useContext } from "react";
 import { Moon, Sun } from "lucide-react";
 import ThemeProvider, { ThemeContext } from "@/contexts/ThemeContext";
+import Image from "next/image";
 
 function AppHeader({hideSidebar = false}) {
   const { themeMode,toggleTheme } = useContext(ThemeContext);

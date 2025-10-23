@@ -6,12 +6,24 @@ import Link from 'next/link'
 import React from 'react'
 
 function EnrolledCourseCard({course, enrollcourse}) {
-    console.log(course);
     console.log(enrollcourse);
     
-    const calculateCourseProgress = ()=>{
-      return (enrollcourse?.completedChapters?.length??0 / course?.courseContent.length)*100
-    }
+    const calculateCourseProgress = () => {
+    // safe length values
+    const completed = Array.isArray(enrollcourse?.completedChapters)
+      ? enrollcourse.completedChapters.length
+      : 0;
+
+    const total = Array.isArray(course?.courseContent)
+      ? course.courseContent.length
+      : 0;
+
+    if (total === 0) return 0;
+
+    const percent = Math.round((completed / total) * 100);
+    // clamp to [0,100]
+    return Math.min(100, Math.max(0, percent));
+  };
   return (
     <div className="flex flex-col  w-full gap-5 shadow-md  shadow-blue-400 rounded-xl p-2">
       <Image

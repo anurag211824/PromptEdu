@@ -33,7 +33,7 @@ const SideBarOptions = [
   {
     title: "My Learning",
     icon: Book,
-    path: "/workspace/my-courses",
+    path: "/workspace/my-learning",
   },
   {
     title: "Explore Courses",
@@ -61,6 +61,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
+      <Link href="/">
         <Image
           className="ml-[-30px] mt-[-20px] mb-[-20px]"
           src="/logo.svg"
@@ -68,6 +69,7 @@ export function AppSidebar() {
           width={150}
           height={100}
         />
+      </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

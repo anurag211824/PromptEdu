@@ -7,14 +7,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeContext } from "@/contexts/ThemeContext";
 
 function ChapterListSidebar({ courseInfo }) {
   const { setSelectedChapterIndex } = useContext(SelectedChapterIndex);
-  const { themeMode } = useContext(ThemeContext);
-  const [isOpen, setIsOpen] = useState(false);
+  console.log(courseInfo);
+  const completedChapterArray =   courseInfo?.[0]?.
+enrollCourse?.completedChapters;
+
   const rawContent =
     courseInfo?.[0]?.courses?.courseContent ??
     courseInfo?.[0]?.courseContent ??
@@ -80,7 +79,7 @@ function ChapterListSidebar({ courseInfo }) {
                 <AccordionItem
                   onClick={() => {
                     setSelectedChapterIndex(cIndex);
-                    setIsOpen(false);
+
                   }}
                   key={chapterKey}
                   value={String(title) + "-" + chapterKey}
@@ -103,7 +102,8 @@ function ChapterListSidebar({ courseInfo }) {
                             t?.id ?? t?.cid ?? `${chapterKey}-topic-${tIndex}`;
 
                           return (
-                            <div key={topicKey} className="p-2 border rounded">
+                            <div key={topicKey} className={`${completedChapterArray.includes(cIndex) ?  "bg-green-500 text-green-900"
+                                  : "" } p-2 border rounded`}>
                               <h3 className="font-medium">
                                 {topicTitle ?? `Topic ${tIndex + 1}`}
                               </h3>
