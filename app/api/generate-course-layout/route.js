@@ -3,85 +3,122 @@ import { coursesTable } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
-const PROMPT = `Generate Learning Course depends on following details.  
-In which Make sure to add Course Name, Description, Course Banner Image Prompt (Create a modern,  
-flat-style 2D digital illustration representing user Topic. Include UI/UX elements  such as mockup 
-screens, text blocks, icons, buttons, and creative workspace tools.  
-Add symbolic elements related to user Course, like sticky notes, design components, 
-and visual aids.  Use a vibrant color palette (blues, purples, oranges) with a clean, 
-professional look.  The illustration should feel creative, tech-savvy, and educational, 
-ideal for visualizing concepts in  user Course) for Course Banner in 3d format Chapter Name, 
-Topic under each chapters,  Duration for each chapters etc, in JSON format only Schema: 
-{ "course": { "course_name": "string", "course_description": "string", "category": "string", "
- difficulty": "string", "include_videos": "boolean", "chapters_number": "number", "bannerImagePrompt": 
- "string", "chapters": [ { "chapterName": "string", "duration": "string", "topics": [ "string" ] } ] } } 
- User Input: ;`;
+
+const RATE_LIMIT_TIME = 20000; // 20 seconds
+const userRequestTimestamps = new Map();
+
+const PROMPT = `Generate Learning Course based on the following details.
+Make sure to include:
+- Course Name,
+- Course Description,
+- Category,
+- Difficulty,
+- Number of Chapters,
+- Include Videos,
+- 3D Banner Image Prompt,
+- Chapters with Duration and Topics.
+Return valid JSON only in this format:
+{
+  "course": {
+    "course_name": "string",
+    "course_description": "string",
+    "category": "string",
+    "difficulty": "string",
+    "include_videos": "boolean",
+    "chapters_number": "number",
+    "bannerImagePrompt": "string",
+    "chapters": [
+      { "chapterName": "string", "duration": "string", "topics": ["string"] }
+    ]
+  }
+}
+User Input:
+`;
+
+function rateLimit(userId) {
+  const now = Date.now();
+  if (userRequestTimestamps.has(userId)) {
+    const lastReq = userRequestTimestamps.get(userId);
+    if (now - lastReq < RATE_LIMIT_TIME) {
+      throw new Error("You're doing it too fast. Please wait a few seconds and try again.");
+    }
+  }
+  userRequestTimestamps.set(userId, now);
+}
+
+async function safeGeminiCall(ai, model, config, contents, retries = 2) {
+  try {
+    return await ai.models.generateContent({ model, config, contents });
+  } catch (error) {
+    if (error.status === 429 && retries > 0) {
+      console.warn("Rate limit reached. Retrying in 5 seconds...");
+      await new Promise(res => setTimeout(res, 5000));
+      return safeGeminiCall(ai, model, config, contents, retries - 1);
+    }
+    throw error;
+  }
+}
+
 export async function POST(req) {
   try {
-     console.log("Before parsing formData"); 
     const formData = await req.json();
-    console.log("Form data received:", formData);
-    
-    const user = await currentUser()
-    const ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    });
-    const config = {
-      responseModalities: ["TEXT"],
-    };
-    const model = "gemini-2.5-pro";
+    const user = await currentUser();
+
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    rateLimit(user.id);
+
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
     const contents = [
       {
         role: "user",
-        parts: [
-          {
-            text: PROMPT + JSON.stringify(formData),
-          },
-        ],
+        parts: [{ text: PROMPT + JSON.stringify(formData) }],
       },
     ];
 
-    const response = await ai.models.generateContent({
-      model,
-      config,
-      contents,
+    const response = await safeGeminiCall(
+      ai,
+      "gemini-2.5-pro",
+      { responseModalities: ["TEXT"] },
+      contents
+    );
+
+    let rawText = response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    rawText = rawText.replace(/```json|```/g, "").trim();
+
+    let jsonResp;
+    try {
+      jsonResp = JSON.parse(rawText);
+    } catch {
+      throw new Error("AI response was not valid JSON");
+    }
+
+    const imagePrompt = jsonResp?.course?.bannerImagePrompt || "3D abstract course banner";
+
+    const imageUrl = await generateImage(imagePrompt);
+
+    await db.insert(coursesTable).values({
+      ...formData,
+      courseJson: jsonResp,
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      cid: formData.courseId,
+      bannerImageUrl: imageUrl
     });
 
-    console.log(response.candidates[0].content.parts[0].text);
-    const RawRes = response?.candidates[0].content.parts[0].text
-    const RawJson =  RawRes.replace('```json','').replace('```','')
-    const JSONResp = JSON.parse(RawJson)
-    const imagePrompt = JSONResp.course?.bannerImagePrompt
+    return NextResponse.json({ success: true, courseId: formData.courseId });
 
-    // generate Image
-     const imageUrl = await generateImage(imagePrompt);
-    // Save to Database
-    const result = await db.insert(coursesTable).values({
-      ...formData,
-      courseJson:JSONResp,
-      userEmail:user?.primaryEmailAddress?.emailAddress,
-      cid:formData.courseId,
-      bannerImageUrl: imageUrl
-    })
-    
-    return NextResponse.json({ success: true, courseId:formData.courseId });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
 async function generateImage(prompt) {
   try {
     const encodedPrompt = encodeURIComponent(prompt);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${Date.now()}`;
-    
-    console.log("Generated image URL:", imageUrl);
-    return imageUrl;
-  } catch (error) {
-    console.error("Error generating image:", error);
+    return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&model=flux&seed=${Date.now()}`;
+  } catch {
     return null;
   }
 }
