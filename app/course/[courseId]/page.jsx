@@ -11,16 +11,20 @@ import { Book, Menu, X } from "lucide-react";
 
 function Course() {
   const { courseId } = useParams();
+  const [loading,setLoading] = useState(false)
   const router = useRouter();
   const [courseInfo, setCourseInfo] = useState();
-  const [isOpen, setIsOpen] = useState(false); // ✅ Sidebar toggle
+  const [isOpen, setIsOpen] = useState(false);
 
   const GetEnrolledCourseById = async () => {
     try {
+      setLoading(true)
       const response = await fetch("/api/enroll-course?courseId=" + courseId);
       const response_data = await response.json();
       setCourseInfo(response_data.data);
+      setLoading(false)
     } catch (error) {
+      setLoading(false)
       console.log(error);
     }
   };
@@ -28,6 +32,10 @@ function Course() {
   useEffect(() => {
     GetEnrolledCourseById();
   }, []);
+
+  if(loading){
+    return <p className="flex items-center justify-center">Loading the course content....</p>
+  }
 
   return (
     <SelectedChapterIndexProvider>

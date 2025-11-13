@@ -1,24 +1,31 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
-import { Book, Clock, Loader2Icon, PlayCircle, Settings, Sparkle, TrendingUp } from "lucide-react";
+import {
+  Book,
+  Clock,
+  Loader2Icon,
+  PlayCircle,
+  Settings,
+  Sparkle,
+  TrendingUp,
+} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import Link from "next/link";
 
+function CourseInfo({ course, viewCourse }) {
+  console.log("Hi", course);
 
-function CourseInfo({ course,viewCourse }) {
-  console.log(course);
-  
   const courseLayout = course?.courseJson.course;
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   const GenerateCourseContent = async () => {
     // call api to genearate content
     try {
-        setLoading(true)
+      setLoading(true);
       const response = await fetch("/api/generate-course-content", {
         method: "POST",
         headers: {
@@ -29,27 +36,20 @@ function CourseInfo({ course,viewCourse }) {
           courseTitle: course?.course_name,
           courseId: course?.cid,
         }),
-
-       
-        
       });
 
       const response_data = await response.json();
       if (response_data.success) {
-        setLoading(false)
-        router.replace("/workspace")
-        toast.success("Course Generated successfully")
+        setLoading(false);
+        router.replace("/workspace");
+        toast.success("Course Generated successfully");
         console.log(response_data.courseContent);
+      } else {
+        setLoading(false);
       }
-      else{
-        setLoading(false)
-      }
-
-
-       
     } catch (error) {
-        setLoading(false)
-        toast.error("server side error:",error)
+      setLoading(false);
+      toast.error("server side error:", error);
       console.log(error);
     }
   };
@@ -60,21 +60,15 @@ function CourseInfo({ course,viewCourse }) {
         <p className="line-clamp-2 text-gray-500">
           {courseLayout?.course_description}
         </p>
-          <div className="flex flex-col gap-5">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            <div className="flex gap-5 items-center p-3 rounded-lg shadow-sm shadow-blue-400">
-              <Clock className="text-blue-500" />
-              <section>
-                <h2 className="font-bold">Duration</h2>
-                <h2>2 Hour</h2>
-              </section>
-            </div>
+        <div className="flex flex-col gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+         
 
             <div className="flex gap-5 items-center p-3 rounded-lg shadow-sm shadow-blue-400">
               <Book className="text-green-500" />
               <section>
                 <h2 className="font-bold">Chapters</h2>
-                <h2>2 Hour</h2>
+                <h2>{course?.chapters_number}</h2>
               </section>
             </div>
 
@@ -87,13 +81,23 @@ function CourseInfo({ course,viewCourse }) {
             </div>
           </div>
           {!viewCourse ? (
-            <Button onClick={GenerateCourseContent} className="w-full text-white  text-[17px]">
-              {loading ? <Loader2Icon className="animate-spin" /> : <Settings />}
+            <Button
+              onClick={GenerateCourseContent}
+              className="w-full text-white  text-[17px]"
+            >
+              {loading ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <Settings />
+              )}
               Generate Content
             </Button>
           ) : (
-            <Link href={'/course/'+course?.cid}>
-              <Button className="w-full"><PlayCircle />Continue Learning</Button>
+            <Link href={"/course/" + course?.cid}>
+              <Button className="w-full">
+                <PlayCircle />
+                Continue Learning
+              </Button>
             </Link>
           )}
         </div>

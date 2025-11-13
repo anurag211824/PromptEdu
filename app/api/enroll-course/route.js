@@ -124,3 +124,31 @@ export async function PUT(req) {
   }
 }
 
+
+
+export async function DELETE(req) {
+  try {
+    const { id } = await req.json(); // enrollCourse.id
+
+    // 1. Fetch enroll row
+    const [enrolled] = await db
+      .select()
+      .from(enrollCourseTable)
+      .where(eq(enrollCourseTable.id, id));
+
+    if (!enrolled) {
+      return NextResponse.json({ error: "Enrollment not found" });
+    }
+
+    // 2. Delete enroll entry
+    await db
+      .delete(enrollCourseTable)
+      .where(eq(enrollCourseTable.id, id));
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Something went wrong" });
+  }
+}
+
