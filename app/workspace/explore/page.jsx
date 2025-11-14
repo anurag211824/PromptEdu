@@ -14,7 +14,7 @@ const ExploreCourses = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true)
-        const response = await fetch('/api/courses')
+        const response = await fetch('/api/get-all-courses')
         const result = await response.json()
         setCourses(result.data)
         setFilteredCourses(result.data)
