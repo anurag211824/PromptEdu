@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Book,
+  BookAIcon,
   Compass,
   LayoutDashboard,
   PencilRulerIcon,
@@ -39,6 +40,11 @@ const SideBarOptions = [
     title: "Explore Courses",
     icon: Compass,
     path: "/workspace/explore",
+  },
+  {
+    title: "Semester-Course",
+    icon: BookAIcon,
+    path: "/workspace/semester-course",
   },
   {
     title: "Ai Tools",

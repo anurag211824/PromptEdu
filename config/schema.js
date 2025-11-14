@@ -16,12 +16,13 @@ export const coursesTable = pgTable("courses", {
   course_description: varchar(),
   chapters_number: integer().notNull(),
   include_videos: boolean().default(false),
-  difficulty: varchar().notNull(),
+  difficulty: varchar().default("semester"),
   category: varchar(),
   courseJson:json(),
   bannerImageUrl:varchar().default(''),
   courseContent:json().default({}),
   userEmail: varchar("userEmail").references(() => usersTable.email).notNull(),
+    isSemesterCourse: boolean().default(false),
 });
 
 
