@@ -32,7 +32,7 @@ const SideBarOptions = [
     path: "/workspace",
   },
   {
-    title: "My Learning",
+    title: "Enrolled Courses",
     icon: Book,
     path: "/workspace/my-learning",
   },
