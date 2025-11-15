@@ -64,7 +64,7 @@ function AddNewCourseDialog({ children }) {
     console.log("Form data being sent:", formData);
     try {
       setLoading(true)
-      const response = await fetch("api/generate-course-layout", {
+      const response = await fetch("/api/generate-course-layout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

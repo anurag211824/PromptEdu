@@ -26,7 +26,7 @@ function EnrollCourseList() {
         <h2 className="font-bold text-2xl mb-3">
             Continue Learning your courses
         </h2>
-       <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-4 gap-5">
+       <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-5">
          {enrolledCourseList.map((course,index)=>{
             return <EnrolledCourseCard setCourseRemoved={setCourseRemoved} course={course?.courses} key={index} enrollcourse={course?.enrollCourse}/>
         })}
