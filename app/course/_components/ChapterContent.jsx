@@ -2,6 +2,8 @@
 import { Button } from "@/components/ui/button";
 import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
 import { CheckCircle, Loader2Icon, X } from "lucide-react";
+import Link from "next/link";
+
 import { useParams } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -24,7 +26,7 @@ function ChapterContent({ courseInfo, refreshData }) {
   console.log(courseInfo);
   const enrollCourse = courseInfo?.[0]?.enrollCourse;
   console.log(enrollCourse);
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const { selectedChapterIndex, setSelectedChapterIndex } =
     useContext(SelectedChapterIndex);
   const rawContent =
@@ -76,7 +78,7 @@ function ChapterContent({ courseInfo, refreshData }) {
       const newCompleted = Array.from(
         new Set([...existing, selectedChapterIndex])
       );
-       setLoading(true)
+      setLoading(true);
       const response = await fetch("/api/enroll-course", {
         method: "PUT",
         headers: {
@@ -93,14 +95,13 @@ function ChapterContent({ courseInfo, refreshData }) {
 
       if (data.success) {
         toast.success("Marked Completed");
-        setLoading(false)
+        setLoading(false);
         await refreshData();
-        
       } else {
         console.error("Failed to update:", data.error);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error("Error updating chapter:", error);
     }
   };
@@ -113,7 +114,7 @@ function ChapterContent({ courseInfo, refreshData }) {
       const newCompleted = existing.filter(
         (item) => item != selectedChapterIndex
       );
-     setLoading(true)
+      setLoading(true);
       const response = await fetch("/api/enroll-course", {
         method: "PUT",
         headers: {
@@ -129,15 +130,14 @@ function ChapterContent({ courseInfo, refreshData }) {
       console.log("Update Response:", data);
 
       if (data.success) {
-         toast.success("Marked InCompleted");
-        setLoading(false)
+        toast.success("Marked InCompleted");
+        setLoading(false);
         await refreshData();
-       
       } else {
         console.error("Failed to update:", data.error);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error("Error updating chapter:", error);
     }
   };
@@ -150,12 +150,26 @@ function ChapterContent({ courseInfo, refreshData }) {
           </h2>
 
           {enrollCourse?.completedChapters?.includes(selectedChapterIndex) ? (
-            <Button className="w-full md:w-auto" onClick={markChapterInComplted} variant="outline">
-              {loading ? <Loader2Icon className="animate-spin"/>: <X className="mr-2" /> }Mark Incomplete
+            <Button
+              className="w-full md:w-auto"
+              onClick={markChapterInComplted}
+              variant="outline"
+            >
+              {loading ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <X className="mr-2" />
+              )}
+              Mark Incomplete
             </Button>
           ) : (
             <Button className="w-full md:w-auto" onClick={markChapterComplted}>
-             {loading ?<Loader2Icon className="animate-spin"/> : <CheckCircle className="mr-2" /> }  Mark Complete
+              {loading ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <CheckCircle className="mr-2" />
+              )}{" "}
+              Mark Complete
             </Button>
           )}
         </div>
@@ -179,9 +193,14 @@ function ChapterContent({ courseInfo, refreshData }) {
       {chapterTopicsData?.length > 0 ? (
         chapterTopicsData.map((item, index) => (
           <div key={index} className="border p-4 rounded-lg my-3 shadow">
-            <h3 className="font-bold text-lg mb-2">
-              {index + 1}.{item.topic}
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg mb-2">
+                {index + 1}.{item.topic}
+              </h3>
+              <Link href={`/youtube/${item.topic}`}>
+                <Button>Get Related Videos</Button>
+              </Link>
+            </div>
             <div
               className="prose"
               dangerouslySetInnerHTML={{ __html: item.content }}
