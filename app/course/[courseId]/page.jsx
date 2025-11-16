@@ -34,8 +34,19 @@ function Course() {
   }, []);
 
   if(loading){
-    return <p className="flex items-center justify-center">Loading the course content....</p>
-  }
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div
+          className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600"
+          role="status"
+          aria-label="Loading"
+        />
+        <span className="text-sm text-gray-700">Loading Courses...</span>
+      </div>
+    </div>
+  );
+}
 
   return (
     <SelectedChapterIndexProvider>

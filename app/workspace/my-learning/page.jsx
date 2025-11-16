@@ -6,7 +6,6 @@ function MyLearning() {
   return (
    <div className='m-5'>
     <WelcomeBanner/>
-    <h2 className='font-bold text-2xl mt-3'>My Learning</h2>
     <EnrollCourseList/>
    </div>
   )

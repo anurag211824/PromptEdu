@@ -54,7 +54,7 @@ const SideBarOptions = [
   {
     title: "Billing",
     icon: WalletCards,
-    path: "/workspace/billing",
+    path: "/workspace/billings",
   },
   {
     title: "Profile",
