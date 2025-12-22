@@ -10,12 +10,14 @@ import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
 
 function ChapterListSidebar({ courseInfo }) {
   const { setSelectedChapterIndex } = useContext(SelectedChapterIndex);
-console.log(courseInfo);
+  console.log(courseInfo);
 
-// Safely handle completedChapters - ensure it's always an array
-const completedChapterArray = Array.isArray(courseInfo?.[0]?.enrollCourse?.completedChapters)
-  ? courseInfo[0].enrollCourse.completedChapters
-  : [];
+  // Safely handle completedChapters - ensure it's always an array
+  const completedChapterArray = Array.isArray(
+    courseInfo?.[0]?.enrollCourse?.completedChapters
+  )
+    ? courseInfo[0].enrollCourse.completedChapters
+    : [];
 
   const rawContent =
     courseInfo?.[0]?.courses?.courseContent ??
@@ -41,7 +43,37 @@ const completedChapterArray = Array.isArray(courseInfo?.[0]?.enrollCourse?.compl
       if (!Array.isArray(courseContent)) courseContent = [];
     }
   }
-  console.log(courseContent);
+
+  // Function to scroll to specific topic
+  const scrollToTopic = (chapterIndex, topicIndex) => {
+    // First set the chapter if it's different
+    if (SelectedChapterIndex !== chapterIndex) {
+      setSelectedChapterIndex(chapterIndex);
+      // Wait a bit for the content to render
+      setTimeout(() => {
+        const topicElement = document.getElementById(
+          `topic-${chapterIndex}-${topicIndex}`
+        );
+        if (topicElement) {
+          topicElement.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 100);
+    } else {
+      // Same chapter, scroll immediately
+      const topicElement = document.getElementById(
+        `topic-${chapterIndex}-${topicIndex}`
+      );
+      if (topicElement) {
+        topicElement.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  };
 
   return (
     <>
@@ -102,11 +134,18 @@ const completedChapterArray = Array.isArray(courseInfo?.[0]?.enrollCourse?.compl
                             t?.id ?? t?.cid ?? `${chapterKey}-topic-${tIndex}`;
 
                           return (
-                            <div key={topicKey} className={`${
-                              completedChapterArray.includes(cIndex) 
-                                ? "bg-green-500 text-green-900"
-                                : ""
-                            } p-2 border rounded`}>
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent accordion toggle
+                                scrollToTopic(cIndex, tIndex);
+                              }}
+                              key={topicKey}
+                              className={`${
+                                completedChapterArray.includes(cIndex)
+                                  ? "bg-green-500 text-green-900"
+                                  : ""
+                              } p-2 border rounded`}
+                            >
                               <h3 className="font-medium">
                                 {topicTitle ?? `Topic ${tIndex + 1}`}
                               </h3>

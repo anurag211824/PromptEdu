@@ -141,20 +141,20 @@ function ChapterContent({ courseInfo, refreshData }) {
       console.error("Error updating chapter:", error);
     }
   };
-    if(loading){
-  return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div
-          className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600"
-          role="status"
-          aria-label="Loading"
-        />
-        <span className="text-sm text-gray-700">Loading Courses...</span>
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div
+            className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600"
+            role="status"
+            aria-label="Loading"
+          />
+          <span className="text-sm text-gray-700">Loading Courses...</span>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
   return (
     <div className="flex flex-col">
       <div className="p-5">
@@ -204,9 +204,14 @@ function ChapterContent({ courseInfo, refreshData }) {
       </div>
       {/* ---- Render Topics & Content ---- */}
       <h2 className="my-4 text-xl font-semibold">Chapter Topics 📚</h2>
+      // ...existing code...
       {chapterTopicsData?.length > 0 ? (
         chapterTopicsData.map((item, index) => (
-          <div key={index} className="border p-4 rounded-lg my-3 shadow">
+          <div
+            key={index}
+            id={`topic-${selectedChapterIndex}-${index}`}
+            className="border p-4 rounded-lg my-3 shadow"
+          >
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg mb-2">
                 {index + 1}.{item.topic}

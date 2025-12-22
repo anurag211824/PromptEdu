@@ -4,10 +4,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
-const RATE_LIMIT_TIME = 20000; // 20 seconds
+const RATE_LIMIT_TIME = 20000; 
 const userRequestTimestamps = new Map();
 
-// MASTER PROMPT (with custom prompt applied)
 const PROMPT = `Generate a Learning Course using the following information:
 1. COURSE NAME provided by the user.
 2. Complete CHAPTER-WISE SYLLABUS or topics list pasted by the user.
