@@ -53,6 +53,8 @@ function EnrolledCourseCard({ course, enrollcourse, setCourseRemoved }) {
     return Math.min(100, Math.max(0, percent));
   };
   return (
+  <Link href={"/course/" + course?.cid}>
+  
     <div className="flex flex-col  w-full gap-5 shadow-md  shadow-blue-400 rounded-xl p-2">
       <Image
         src={course?.bannerImageUrl}
@@ -91,6 +93,8 @@ function EnrolledCourseCard({ course, enrollcourse, setCourseRemoved }) {
         </Link>
       </div>
     </div>
+  
+  </Link>
   );
 }
 

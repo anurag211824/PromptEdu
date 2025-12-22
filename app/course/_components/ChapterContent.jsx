@@ -204,7 +204,6 @@ function ChapterContent({ courseInfo, refreshData }) {
       </div>
       {/* ---- Render Topics & Content ---- */}
       <h2 className="my-4 text-xl font-semibold">Chapter Topics 📚</h2>
-      // ...existing code...
       {chapterTopicsData?.length > 0 ? (
         chapterTopicsData.map((item, index) => (
           <div
