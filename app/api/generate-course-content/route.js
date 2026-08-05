@@ -20,6 +20,29 @@ content:<>
 : User Input:
 `;
 
+function parseJsonResponse(rawText) {
+  if (!rawText) return {};
+  let cleaned = rawText.trim();
+  cleaned = cleaned.replace(/^```(?:json)?/gi, "").replace(/```$/g, "").trim();
+
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    try {
+      return JSON.parse(jsonrepair(cleaned));
+    } catch (e) {
+      console.error("Failed to parse JSON in generate-course-content:", rawText);
+      return {};
+    }
+  }
+}
+
 export async function POST(req) {
   try {
     const { courseLayout, courseTitle, courseId } = await req.json();
@@ -27,10 +50,10 @@ export async function POST(req) {
 
     const promises = courseLayout?.chapters.map(async (chapter) => {
       const config = {
-        responseModalities: ["TEXT"],
+        responseMimeType: "application/json",
       };
 
-      const model = "gemma-4-26b-a4b-it";
+      const model = "gemini-2.5-flash";
 
       const contents = [
         {
@@ -43,28 +66,34 @@ export async function POST(req) {
         },
       ];
 
-      const response = await ai.models.generateContent({
-        model,
-        config,
-        contents,
-      });
-
-      //console.log(response.candidates[0].content.parts[0].text);
-      const RawRes = response?.candidates[0].content.parts[0].text;
-      const RawJson = RawRes.replace("```json", "").replace("```", "").trim();
-      let JSONResp;
-
+      let response;
       try {
-        JSONResp = JSON.parse(RawJson);
-      } catch {
-        JSONResp = JSON.parse(jsonrepair(RawJson));
+        response = await ai.models.generateContent({
+          model,
+          config,
+          contents,
+        });
+      } catch (err) {
+        if (err.status === 404 || err.message?.includes("not found")) {
+          response = await ai.models.generateContent({
+            model: "gemini-1.5-flash",
+            config,
+            contents,
+          });
+        } else {
+          throw err;
+        }
       }
+
+      const RawRes = response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const JSONResp = parseJsonResponse(RawRes);
+
       const YouTubeData = await GetYoutubeVideo(chapter?.chapterName)
       console.log(YouTubeData);
       
       return {
-     YoutubeVideo:YouTubeData,
-     courseData:JSONResp,
+        YoutubeVideo: YouTubeData,
+        courseData: JSONResp,
       };
     });
 

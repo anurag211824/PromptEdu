@@ -3,6 +3,7 @@ import { coursesTable } from "@/config/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
+import { jsonrepair } from "jsonrepair";
 
 const RATE_LIMIT_TIME = 20000; 
 const userRequestTimestamps = new Map();
@@ -74,6 +75,29 @@ function rateLimit(userId) {
   userRequestTimestamps.set(userId, now);
 }
 
+function parseJsonResponse(rawText) {
+  if (!rawText) throw new Error("Empty response from AI");
+  let cleaned = rawText.trim();
+  cleaned = cleaned.replace(/^```(?:json)?/gi, "").replace(/```$/g, "").trim();
+
+  const firstBrace = cleaned.indexOf("{");
+  const lastBrace = cleaned.lastIndexOf("}");
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+  }
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    try {
+      return JSON.parse(jsonrepair(cleaned));
+    } catch (e) {
+      console.error("JSON PARSE ERROR:", rawText);
+      throw new Error("AI response was not valid JSON");
+    }
+  }
+}
+
 async function safeGeminiCall(ai, model, config, contents, retries = 2) {
   try {
     return await ai.models.generateContent({ model, config, contents });
@@ -82,6 +106,10 @@ async function safeGeminiCall(ai, model, config, contents, retries = 2) {
       console.warn("Gemini Rate Limit hit! Retrying in 5s...");
       await new Promise((res) => setTimeout(res, 5000));
       return safeGeminiCall(ai, model, config, contents, retries - 1);
+    }
+    if (model !== "gemini-1.5-flash" && (error.status === 404 || error.message?.includes("not found"))) {
+      console.warn(`Model ${model} not found, falling back to gemini-1.5-flash`);
+      return safeGeminiCall(ai, "gemini-1.5-flash", config, contents, retries);
     }
     throw error;
   }
@@ -110,22 +138,13 @@ export async function POST(req) {
 
     const response = await safeGeminiCall(
       ai,
-      "gemini-flash-latest",
-      { responseModalities: ["TEXT"] },
+      "gemini-2.5-flash",
+      { responseMimeType: "application/json" },
       contents
     );
 
     let rawText = response?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    rawText = rawText.replace(/```json|```/g, "").trim();
-
-    let jsonResp;
-    try {
-      jsonResp = JSON.parse(rawText);
-    } catch (e) {
-      console.error("JSON PARSE ERROR:", rawText);
-      throw new Error("AI response was not valid JSON");
-    }
+    let jsonResp = parseJsonResponse(rawText);
 
     const imagePrompt =
       jsonResp?.course?.bannerImagePrompt ||
