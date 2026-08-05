@@ -30,7 +30,7 @@ export async function POST(req) {
         responseModalities: ["TEXT"],
       };
 
-      const model = "gemini-flash-latest";
+      const model = "gemini-3.6-flash";
 
       const contents = [
         {
