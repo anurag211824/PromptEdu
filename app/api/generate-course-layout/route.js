@@ -79,7 +79,7 @@ export async function POST(req) {
 
     const response = await safeGeminiCall(
       ai,
-      "gemini-3.6-flash",
+      "gemma-4-26b-a4b-it",
       { responseModalities: ["TEXT"] },
       contents
     );
