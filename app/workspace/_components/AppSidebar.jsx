@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { DialogTrigger } from "@/components/ui/dialog";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -14,10 +14,9 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Book,
-  BookAIcon,
   Compass,
   LayoutDashboard,
-  PencilRulerIcon,
+  Sparkles,
   UserCircle2Icon,
   WalletCards,
 } from "lucide-react";
@@ -25,89 +24,72 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import AddNewCourseDialog from "./AddNewCourseDialog";
-const SideBarOptions = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/workspace",
-  },
-  {
-    title: "Enrolled Courses",
-    icon: Book,
-    path: "/workspace/my-learning",
-  },
-  {
-    title: "Explore Courses",
-    icon: Compass,
-    path: "/workspace/explore",
-  },
-  {
-    title: "Semester-Course",
-    icon: BookAIcon,
-    path: "/workspace/semester-course",
-  },
-  {
-    title: "Ai Tools",
-    icon: PencilRulerIcon,
-    path: "/workspace/ai-tools",
-  },
-  {
-    title: "Billing",
-    icon: WalletCards,
-    path: "/workspace/billings",
-  },
-  {
-    title: "Profile",
-    icon: UserCircle2Icon,
-    path: "/workspace/profile",
-  },
+
+const LearnOptions = [
+  { title: "Dashboard", icon: LayoutDashboard, path: "/workspace" },
+  { title: "My Learning", icon: Book, path: "/workspace/my-learning" },
+  { title: "Explore Courses", icon: Compass, path: "/workspace/explore" },
 ];
+
+const AccountOptions = [
+  { title: "Billing", icon: WalletCards, path: "/workspace/billings" },
+  { title: "Profile", icon: UserCircle2Icon, path: "/workspace/profile" },
+];
+
 export function AppSidebar() {
   const path = usePathname();
+
+  // "/workspace" prefixes every other route, so it only matches exactly.
+  const isActive = (optionPath) =>
+    optionPath === "/workspace" ? path === optionPath : path.startsWith(optionPath);
+
+  const renderMenu = (options) => (
+    <SidebarMenu>
+      {options.map((option) => {
+        const active = isActive(option.path);
+        return (
+          <SidebarMenuItem key={option.path}>
+            <SidebarMenuButton asChild isActive={active}>
+              <Link href={option.path} aria-current={active ? "page" : undefined}>
+                <option.icon />
+                <span>{option.title}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
+    </SidebarMenu>
+  );
+
   return (
     <Sidebar>
-      <SidebarHeader>
-      <Link href="/">
-        <Image
-          className="ml-[-30px] mt-[-20px] mb-[-20px]"
-          src="/logo.svg"
-          alt="logo"
-          width={150}
-          height={100}
-        />
-      </Link>
+      <SidebarHeader className="px-4 py-3">
+        <Link href="/" aria-label="PromptEdu home">
+          <Image src="/logo.svg" alt="PromptEdu" width={130} height={40} priority />
+        </Link>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <AddNewCourseDialog>
-            <Button className="text-white">Create New Course</Button>
+            <Button className="w-full">
+              <Sparkles aria-hidden />
+              Create New Course
+            </Button>
           </AddNewCourseDialog>
         </SidebarGroup>
+
         <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {SideBarOptions.map((option, index) => {
-                return (
-                  <SidebarMenuItem key={index}>
-                    <SidebarMenuButton asChild className="p-1">
-                      <Link
-                        href={option.path}
-                        className={`${
-                          path.includes(option.path) && "text-blue-400"
-                        } "text-[17px]`}
-                      >
-                        <option.icon className="h-10 w-10" />
-                        <span>{option.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupLabel>Learn</SidebarGroupLabel>
+          <SidebarGroupContent>{renderMenu(LearnOptions)}</SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup />
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupContent>{renderMenu(AccountOptions)}</SidebarGroupContent>
+        </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter />
     </Sidebar>
   );

@@ -1,167 +1,143 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Progress } from "@/components/ui/progress";
 import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
+import { CheckCircle2, Circle } from "lucide-react";
+import {
+  getChapterName,
+  getChapters,
+  getCompletedChapters,
+  getTopicName,
+  getTopics,
+} from "./courseContent";
 
-function ChapterListSidebar({ courseInfo }) {
-  const { setSelectedChapterIndex } = useContext(SelectedChapterIndex);
-  console.log(courseInfo);
+function ChapterListSidebar({ courseInfo, onNavigate }) {
+  const { selectedChapterIndex, setSelectedChapterIndex } =
+    useContext(SelectedChapterIndex);
 
-  // Safely handle completedChapters - ensure it's always an array
-  const completedChapterArray = Array.isArray(
-    courseInfo?.[0]?.enrollCourse?.completedChapters
-  )
-    ? courseInfo[0].enrollCourse.completedChapters
-    : [];
+  const chapters = getChapters(courseInfo);
+  const completedChapters = getCompletedChapters(courseInfo);
+  const progress = chapters.length
+    ? Math.round((completedChapters.length / chapters.length) * 100)
+    : 0;
 
-  const rawContent =
-    courseInfo?.[0]?.courses?.courseContent ??
-    courseInfo?.[0]?.courseContent ??
-    courseInfo?.courseContent ??
-    null;
+  const goToTopic = (chapterIndex, topicIndex) => {
+    setSelectedChapterIndex(chapterIndex);
+    onNavigate?.();
 
-  // Normalize into an array safely
-  let courseContent = [];
-
-  if (rawContent) {
-    if (typeof rawContent === "string") {
-      try {
-        const parsed = JSON.parse(rawContent);
-        courseContent = Array.isArray(parsed) ? parsed : parsed?.chapters ?? [];
-      } catch (e) {
-        courseContent = [];
-      }
-    } else if (Array.isArray(rawContent)) {
-      courseContent = rawContent;
-    } else if (typeof rawContent === "object") {
-      courseContent = rawContent?.chapters ?? Object.values(rawContent);
-      if (!Array.isArray(courseContent)) courseContent = [];
-    }
-  }
-
-  // Function to scroll to specific topic
-  const scrollToTopic = (chapterIndex, topicIndex) => {
-    // First set the chapter if it's different
-    if (SelectedChapterIndex !== chapterIndex) {
-      setSelectedChapterIndex(chapterIndex);
-      // Wait a bit for the content to render
-      setTimeout(() => {
-        const topicElement = document.getElementById(
-          `topic-${chapterIndex}-${topicIndex}`
-        );
-        if (topicElement) {
-          topicElement.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }
-      }, 100);
-    } else {
-      // Same chapter, scroll immediately
-      const topicElement = document.getElementById(
-        `topic-${chapterIndex}-${topicIndex}`
-      );
-      if (topicElement) {
-        topicElement.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
+    // Let the chapter render before scrolling to the topic within it.
+    setTimeout(() => {
+      document
+        .getElementById(`topic-${chapterIndex}-${topicIndex}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
   };
 
   return (
-    <>
-      <div>
-        <div className="flex flex-row items-center justify-between">
-          <h2 className="my-3 font-bold text-xl">
-            Chapters ({courseContent.length})
-          </h2>
+    <div className="flex h-full flex-col">
+      {/* Course progress */}
+      <div className="shrink-0 border-b px-4 py-4">
+        <div className="mb-2 flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold">Your progress</h2>
+          <span className="text-sm font-medium tabular-nums text-muted-foreground">
+            {progress}%
+          </span>
         </div>
+        <Progress value={progress} className="h-1.5" />
+        <p className="mt-2 text-xs text-muted-foreground">
+          {completedChapters.length} of {chapters.length} chapters complete
+        </p>
+      </div>
 
-        <Accordion type="single" collapsible>
-          {courseContent.length === 0 ? (
-            <div className="p-2 text-sm text-muted-foreground">
-              No chapters available
-            </div>
-          ) : (
-            courseContent.map((chapter, cIndex) => {
-              const title =
-                chapter?.courseData?.chapterName ??
-                chapter?.chapterName ??
-                chapter?.title ??
-                `Chapter ${cIndex + 1}`;
-              const chapterKey = chapter?.id ?? chapter?.cid ?? cIndex;
-              let topics = chapter?.courseData?.topics ?? chapter?.topics ?? [];
-              if (typeof topics === "string") {
-                try {
-                  const parsed = JSON.parse(topics);
-                  topics = Array.isArray(parsed) ? parsed : [];
-                } catch (e) {
-                  topics = [];
-                }
-              }
-              if (!Array.isArray(topics)) topics = [];
+      {/* Chapter list */}
+      <nav
+        aria-label="Course chapters"
+        className="thin-scrollbar min-h-0 flex-1 overflow-y-auto px-2 py-3"
+      >
+        {chapters.length === 0 ? (
+          <p className="px-2 py-4 text-sm text-muted-foreground">
+            No chapters available yet.
+          </p>
+        ) : (
+          <Accordion
+            type="single"
+            collapsible
+            value={String(selectedChapterIndex)}
+            onValueChange={(value) => {
+              if (value !== "") setSelectedChapterIndex(Number(value));
+            }}
+          >
+            {chapters.map((chapter, cIndex) => {
+              const isActive = cIndex === selectedChapterIndex;
+              const isComplete = completedChapters.includes(cIndex);
+              const topics = getTopics(chapter);
 
               return (
                 <AccordionItem
-                  onClick={() => {
-                    setSelectedChapterIndex(cIndex);
-                  }}
-                  key={chapterKey}
-                  value={String(title) + "-" + chapterKey}
+                  key={cIndex}
+                  value={String(cIndex)}
+                  className="border-b-0"
                 >
-                  <AccordionTrigger>{title}</AccordionTrigger>
-                  <AccordionContent asChild>
-                    <div className="space-y-2">
-                      {topics.length === 0 ? (
-                        <div className="text-sm text-muted-foreground">
-                          No topics available
-                        </div>
+                  <AccordionTrigger
+                    className={`rounded-md px-2 py-2.5 text-left hover:no-underline ${
+                      isActive ? "bg-accent" : "hover:bg-accent/50"
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-start gap-2.5">
+                      {isComplete ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-500" />
                       ) : (
-                        topics.map((t, tIndex) => {
-                          // t may be a primitive or an object like { topic, content }
-                          const topicTitle =
-                            t?.topic ??
-                            t?.title ??
-                            (typeof t === "string" ? t : null);
-                          const topicKey =
-                            t?.id ?? t?.cid ?? `${chapterKey}-topic-${tIndex}`;
-
-                          return (
-                            <div
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent accordion toggle
-                                scrollToTopic(cIndex, tIndex);
-                              }}
-                              key={topicKey}
-                              className={`${
-                                completedChapterArray.includes(cIndex)
-                                  ? "bg-green-500 text-green-900"
-                                  : ""
-                              } p-2 border rounded`}
-                            >
-                              <h3 className="font-medium">
-                                {topicTitle ?? `Topic ${tIndex + 1}`}
-                              </h3>
-                            </div>
-                          );
-                        })
+                        <Circle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" />
                       )}
+                      <div className="min-w-0">
+                        <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                          Chapter {cIndex + 1}
+                        </div>
+                        <div
+                          className={`text-sm leading-snug ${
+                            isActive ? "font-semibold" : "font-medium"
+                          }`}
+                        >
+                          {getChapterName(chapter, cIndex)}
+                        </div>
+                      </div>
                     </div>
+                  </AccordionTrigger>
+
+                  <AccordionContent className="pb-2 pl-4 pr-1 pt-1">
+                    {topics.length === 0 ? (
+                      <p className="px-2 py-1 text-xs text-muted-foreground">
+                        No topics available.
+                      </p>
+                    ) : (
+                      <ul className="space-y-0.5 border-l pl-3">
+                        {topics.map((topic, tIndex) => (
+                          <li key={tIndex}>
+                            <button
+                              type="button"
+                              onClick={() => goToTopic(cIndex, tIndex)}
+                              className="w-full rounded px-2 py-1.5 text-left text-[13px] leading-snug text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                            >
+                              {getTopicName(topic, tIndex)}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               );
-            })
-          )}
-        </Accordion>
-      </div>
-    </>
+            })}
+          </Accordion>
+        )}
+      </nav>
+    </div>
   );
 }
 

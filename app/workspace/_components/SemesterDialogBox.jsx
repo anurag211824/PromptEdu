@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,11 @@ import {
 
 import SemesterCourseForm from "./SemesterCourseForm";
 
-function SemesterDialogBox({ children,triggerRefresh }) {
+function SemesterDialogBox({ children, triggerRefresh }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
       <DialogContent className="max-w-xl">
@@ -20,7 +22,10 @@ function SemesterDialogBox({ children,triggerRefresh }) {
           <DialogTitle>Create New Course Using AI</DialogTitle>
         </DialogHeader>
 
-        <SemesterCourseForm triggerRefresh={triggerRefresh}/>
+        <SemesterCourseForm
+          triggerRefresh={triggerRefresh}
+          onSuccess={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );

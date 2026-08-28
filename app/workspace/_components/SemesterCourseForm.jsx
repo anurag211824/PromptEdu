@@ -7,8 +7,9 @@ import { Loader2Icon, Sparkle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-function SemesterCourseForm({triggerRefresh}) {
+function SemesterCourseForm({ triggerRefresh, onSuccess }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -40,14 +41,19 @@ function SemesterCourseForm({triggerRefresh}) {
 
       const data = await response.json();
       if (data.success) {
-        triggerRefresh()
-        console.log(data.courseId);
+        triggerRefresh?.()
+        onSuccess?.()
+        toast.success("Course created")
+      } else {
+        console.error("API error:", data);
+        toast.error(data.error ?? "Could not create the course. Please try again.");
       }
     } catch (err) {
       console.error(err);
+      toast.error("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

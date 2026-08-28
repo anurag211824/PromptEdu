@@ -1,59 +1,62 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import EnrolledCourseCard from "./EnrolledCourseCard";
+import CourseGridSkeleton from "./CourseGridSkeleton";
+import { toast } from "sonner";
 
 function EnrollCourseList() {
-  const [loading,setLoading] = useState(false);
-  const [enrolledCourseList,setEnrolledCourseList] = useState([])
-  const [courseRemoved,setCourseRemoved] = useState(false);
-   const GetEnrolledCourse = async () => {
-   try{
-    setLoading(true)
-     const response = await fetch("/api/enroll-course");
-    const response_data = await response.json();
-    console.log(response_data.data);
-    setLoading(false)
-    
-    setEnrolledCourseList(response_data.data)
-   }
-   catch(error){
-    setLoading(false)
-    alert("error happend")
-    console.log(error);
-    
-   }
-  
+  const [loading, setLoading] = useState(true);
+  const [enrolledCourseList, setEnrolledCourseList] = useState([]);
+  const [courseRemoved, setCourseRemoved] = useState(false);
+
+  const getEnrolledCourses = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/enroll-course");
+      const response_data = await response.json();
+      setEnrolledCourseList(response_data.data ?? []);
+    } catch (error) {
+      console.error("Failed to load enrolled courses:", error);
+      toast.error("Could not load your courses. Please refresh.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   useEffect(() => {
-    GetEnrolledCourse();
+    getEnrolledCourses();
   }, [courseRemoved]);
 
-  if(loading){
+  if (loading) {
+    return (
+      <section className="mt-8">
+        <div className="mb-4 h-7 w-56 animate-pulse rounded bg-muted" />
+        <CourseGridSkeleton count={3} />
+      </section>
+    );
+  }
+
+  if (enrolledCourseList.length === 0) return null;
+
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div
-          className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-600"
-          role="status"
-          aria-label="Loading"
-        />
-        <span className="text-sm text-gray-700">Loading Courses...</span>
+    <section className="mt-8">
+      <h2 className="mb-1 text-xl font-bold">Continue learning</h2>
+      <p className="mb-4 text-sm text-muted-foreground">
+        Pick up where you left off.
+      </p>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
+        {enrolledCourseList.map((course, index) => (
+          <EnrolledCourseCard
+            key={course?.enrollCourse?.id ?? index}
+            setCourseRemoved={setCourseRemoved}
+            course={course?.courses}
+            enrollcourse={course?.enrollCourse}
+          />
+        ))}
       </div>
-    </div>
+    </section>
   );
 }
 
-
-  return enrolledCourseList.length > 0 &&  <div className="mt-3">
-        <h2 className="font-bold text-2xl mb-3">
-            Continue Learning your courses
-        </h2>
-       <div className="grid grid-cols-1  lg:grid-cols-2 xl:grid-cols-3 gap-5">
-         {enrolledCourseList.map((course,index)=>{
-            return <EnrolledCourseCard setCourseRemoved={setCourseRemoved} course={course?.courses} key={index} enrollcourse={course?.enrollCourse}/>
-        })}
-       </div>
-  </div>;
-}
-
-export {GetEnrolledCourse,EnrollCourseList}
+export { EnrollCourseList };
+export default EnrollCourseList;

@@ -23,19 +23,23 @@ import { Loader2Icon, Sparkle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { v4 as uuidv4 } from 'uuid';
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+const emptyForm = () => ({
+  courseId: uuidv4(),
+  course_name: "",
+  course_description: "",
+  chapters_number: "",
+  include_videos: false,
+  difficulty: "",
+  category: "",
+});
 
 function AddNewCourseDialog({ children }) {
   const router = useRouter()
+  const [open, setOpen] = useState(false)
   const [loading,setLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    courseId: uuidv4(),
-    course_name: "",
-    course_description: "",
-    chapters_number: "",
-    include_videos: false,
-    difficulty: "",
-    category: "",
-  });
+  const [formData, setFormData] = useState(emptyForm);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -61,7 +65,6 @@ function AddNewCourseDialog({ children }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form data being sent:", formData);
     try {
       setLoading(true)
       const response = await fetch("/api/generate-course-layout", {
@@ -75,32 +78,33 @@ function AddNewCourseDialog({ children }) {
       const data = await response.json();
 
       if (data.success) {
-      setLoading(false)
-      console.log(data.courseId);
-      
-      router.push("/workspace/edit-course/"+data.courseId)
-       
-      
+        // Close the dialog and clear it before navigating, so it isn't still
+        // sitting open over the course page it just created.
+        setOpen(false)
+        setFormData(emptyForm())
+        toast.success("Course created")
+        router.push("/workspace/edit-course/" + data.courseId)
       } else {
+        // Keep the dialog open and the input intact so it can be retried.
         console.error("API error:", data);
-        setLoading(false)
+        toast.error(data.error ?? "Could not create the course. Please try again.")
       }
     } catch (err) {
       console.error("Network error:", err);
+      toast.error("Network error. Please check your connection and try again.")
+    } finally {
+      setLoading(false)
     }
-
-    setFormData({
-      courseId: uuidv4(),
-      course_name: "",
-      course_description: "",
-      chapters_number: "",
-      include_videos: false,
-      difficulty: "",
-      category: "",
-    });
   };
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      // Ignore dismissals while a course is generating, so the request isn't
+      // abandoned halfway through.
+      onOpenChange={(next) => {
+        if (!loading) setOpen(next);
+      }}
+    >
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>

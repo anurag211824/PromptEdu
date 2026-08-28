@@ -1,315 +1,397 @@
-"use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserContext } from "@/contexts/UserContext";
 import { Badge } from "@/components/ui/badge";
-import { UserButton, useUser } from "@clerk/nextjs";
-import { ArrowRight, BookOpen, Brain, Clock, PlayCircle, Sparkles, Star, Users } from "lucide-react";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import {
+  ArrowRight,
+  BookOpen,
+  Code2,
+  FileText,
+  ListChecks,
+  MoonStar,
+  PlayCircle,
+  Sparkles,
+  Wand2,
+  Youtube,
+} from "lucide-react";
 import Link from "next/link";
-import { useContext } from "react";
-import AppHeader from "./workspace/_components/AppHeader";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import Image from "next/image";
+import LandingNav from "./_components/LandingNav";
+import CourseBuilderDemo from "./_components/CourseBuilderDemo";
+import Reveal from "./_components/Reveal";
+
+const STEPS = [
+  {
+    icon: FileText,
+    title: "Describe what you want to learn",
+    body: "Give it a topic and pick how deep you want to go. That's the whole setup.",
+  },
+  {
+    icon: Wand2,
+    title: "The structure gets built",
+    body: "Gemini drafts the course — chapters, the topics inside each one, a description and a cover image.",
+  },
+  {
+    icon: BookOpen,
+    title: "Lessons and videos fill in",
+    body: "Every topic is written out in full, and each chapter is matched with relevant videos from YouTube.",
+  },
+];
+
+const FEATURES = [
+  {
+    icon: Sparkles,
+    title: "Courses from a single prompt",
+    body: "Name any subject and get a complete, structured course back — not a list of links.",
+  },
+  {
+    icon: Youtube,
+    title: "Videos on every chapter",
+    body: "Each chapter comes with hand-picked YouTube videos, and you can pull more for any single topic.",
+  },
+  {
+    icon: ListChecks,
+    title: "Progress that sticks",
+    body: "Mark chapters complete, see how far through you are, and pick up exactly where you stopped.",
+  },
+  {
+    icon: Code2,
+    title: "Lessons built to be read",
+    body: "Every topic follows the same shape — overview, key concepts, a worked example with highlighted code, takeaways.",
+  },
+  {
+    icon: MoonStar,
+    title: "Light, dark and mobile",
+    body: "A reading view that works on a phone at the bus stop and a monitor at your desk.",
+  },
+];
+
+const LESSON_SECTIONS = [
+  "Overview",
+  "Key Concepts",
+  "How It Works",
+  "Example",
+  "Key Takeaways",
+];
 
 export default function Home() {
-  const {userDetails} = useContext(UserContext)
-  console.log(userDetails);
-  const { user } = useUser()
-
-  const features = [
-    {
-      icon: <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />,
-      title: "AI-Powered Learning",
-      description: "Get personalized course recommendations and AI-generated content tailored to your learning style."
-    },
-    {
-      icon: <BookOpen className="h-8 w-8 text-green-600 dark:text-green-400" />,
-      title: "Interactive Courses",
-      description: "Engage with hands-on projects, quizzes, and real-world applications across various topics."
-    },
-    {
-      icon: <Users className="h-8 w-8 text-purple-600 dark:text-purple-400" />,
-      title: "Expert Instructors",
-      description: "Learn from industry professionals and certified educators with years of experience."
-    },
-    {
-      icon: <Clock className="h-8 w-8 text-orange-600 dark:text-orange-400" />,
-      title: "Learn at Your Pace",
-      description: "Flexible scheduling with lifetime access to course materials and progress tracking."
-    }
-  ]
-
-  const stats = [
-    { number: "10,000+", label: "Active Students" },
-    { number: "500+", label: "Courses Available" },
-    { number: "50+", label: "Expert Instructors" },
-    { number: "95%", label: "Completion Rate" }
-  ]
-
-  const popularCourses = [
-    {
-      title: "Introduction to AI & Machine Learning",
-      description: "Master the fundamentals of artificial intelligence and machine learning with hands-on projects.",
-      image: "machine-learning.jpeg",
-      chapters: 8,
-      duration: "6 hours",
-      level: "Beginner",
-      rating: 4.9
-    },
-    {
-      title: "Full Stack Web Development",
-      description: "Build modern web applications using React, Node.js, and database technologies.",
-      image: "fullstack_sioshn.png",
-      chapters: 12,
-      duration: "15 hours",
-      level: "Intermediate",
-      rating: 4.8
-    },
-    {
-      title: "Data Science & Analytics",
-      description: "Learn data analysis, visualization, and statistical modeling with Python and R.",
-      image: "What-is-data-science-2.jpg",
-      chapters: 10,
-      duration: "12 hours",
-      level: "Advanced",
-      rating: 4.9
-    }
-  ]
-  
   return (
-    <>
-  
-      <div className="flex items-center justify-between">
-         <Image
-                  className="ml-[5px] mt-[-20px] mb-[-20px]"
-                  src="/logo.svg"
-                  alt="logo"
-                  width={100}
-                  height={100}
-                />
-          <AppHeader hideSidebar={true}/>
-      </div>
-         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <Badge className="mb-4 bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70">
-              <Sparkles className="w-4 h-4 mr-1" />
-              AI-Powered Learning Platform
+    <div className="min-h-screen bg-background">
+      <LandingNav />
+
+      {/* ---------------------------------------------------------------- Hero */}
+      <section className="relative overflow-hidden">
+        {/* Drifting aurora blobs */}
+        <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+          <div className="animate-aurora absolute -left-24 -top-32 h-[32rem] w-[32rem] rounded-full bg-blue-500/20 blur-3xl dark:bg-blue-500/15" />
+          <div
+            className="animate-aurora absolute -right-24 top-10 h-[28rem] w-[28rem] rounded-full bg-purple-500/20 blur-3xl dark:bg-purple-500/15"
+            style={{ animationDelay: "-8s" }}
+          />
+          <div
+            className="animate-aurora absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-cyan-400/15 blur-3xl dark:bg-cyan-400/10"
+            style={{ animationDelay: "-15s" }}
+          />
+        </div>
+
+        <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-20 md:px-6 lg:grid-cols-2 lg:py-28">
+          <Reveal>
+            <Badge
+              variant="secondary"
+              className="mb-5 gap-1.5 rounded-full px-3 py-1"
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              Powered by Gemini
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-400 dark:via-purple-400 dark:to-blue-300 bg-clip-text text-transparent mb-6">
-              Master New Skills with
-              <br />
-              <span className="text-blue-600 dark:text-blue-400">PromptEdu</span>
+
+            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-6xl">
+              Turn any topic into a{" "}
+              <span className="bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                full course
+              </span>
+              .
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Unlock your potential with our AI-powered learning platform. Get personalized courses, 
-              track your progress, and learn from industry experts at your own pace.
+
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Describe what you want to learn and PromptEdu writes the chapters,
+              the lessons and the examples, finds the videos, and tracks how far
+              you&apos;ve got.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <SignedIn>
                 <Link href="/workspace">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3">
-                    <PlayCircle className="mr-2 h-5 w-5" />
-                    Continue Learning
+                  <Button size="lg" className="w-full sm:w-auto">
+                    <PlayCircle aria-hidden />
+                    Go to your dashboard
                   </Button>
                 </Link>
-              ) : (
+              </SignedIn>
+
+              <SignedOut>
                 <Link href="/sign-up">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white px-8 py-3">
-                    Start Learning Free
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                  <Button size="lg" className="group w-full sm:w-auto">
+                    Start building free
+                    <ArrowRight
+                      className="transition-transform group-hover:translate-x-1"
+                      aria-hidden
+                    />
                   </Button>
                 </Link>
-              )}
+              </SignedOut>
+
               <Link href="/workspace/explore">
-                <Button variant="outline" size="lg" className="px-8 py-3 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  Explore Courses
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                  Explore courses
                 </Button>
               </Link>
             </div>
-          </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  {stat.number}
-                </div>
-                <div className="text-gray-600 dark:text-gray-300 font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+            <p className="mt-5 text-sm text-muted-foreground">
+              No credit card needed. Your first course takes about a minute.
+            </p>
+          </Reveal>
+
+          <Reveal delay={150} className="flex justify-center lg:justify-end">
+            <div className="animate-float-slow">
+              <CourseBuilderDemo />
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose PromptEdu?
+      {/* -------------------------------------------------------- How it works */}
+      <section id="how-it-works" className="border-t bg-muted/30 py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              From a sentence to a syllabus
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Experience the future of online learning with our innovative platform designed for modern learners.
+            <p className="mt-4 text-lg text-muted-foreground">
+              Three steps, and the longest one is waiting about a minute.
             </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center border-none shadow-lg hover:shadow-xl dark:bg-gray-800 dark:shadow-gray-900/50 dark:hover:shadow-gray-900/70 transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-full w-fit">
-                    {feature.icon}
+          </Reveal>
+
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {STEPS.map((step, i) => (
+              <Reveal key={step.title} delay={i * 120}>
+                <div className="group relative h-full rounded-2xl border bg-card p-7 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/40 hover:shadow-lg">
+                  <span className="absolute right-6 top-6 text-5xl font-bold leading-none text-muted-foreground/10 transition-colors group-hover:text-blue-500/20">
+                    {i + 1}
+                  </span>
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 transition-transform duration-300 group-hover:scale-110 dark:text-blue-400">
+                    <step.icon className="h-5 w-5" aria-hidden />
                   </div>
-                  <CardTitle className="text-xl font-semibold text-gray-900 dark:text-white">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-gray-600 dark:text-gray-300">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Courses Section */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Popular Courses
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Start your learning journey with our most popular courses
-            </p>
-          </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {popularCourses.map((course, index) => (
-<Card key={index} className="overflow-hidden hover:shadow-xl dark:bg-gray-700 dark:shadow-gray-900/50 dark:hover:shadow-gray-900/70 transition-shadow">
-  <div className="h-48 relative overflow-hidden">
-    <Image
-      src={`/${course.image}`}
-      alt={course.title}
-      fill
-      className="object-cover"
-    />
-    <div className="absolute inset-0 bg-black/20 dark:bg-black/40"></div>
-    <div className="absolute bottom-4 left-4 text-white">
-      <Badge className="bg-white/20 text-white mb-2 dark:bg-white/30">{course.level}</Badge>
-      <h3 className="font-semibold text-lg line-clamp-2">{course.title}</h3>
-    </div>
-  </div>
-  <CardContent className="p-6">
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                    {course.description}
+                  <h3 className="mb-2 text-lg font-semibold">{step.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {step.body}
                   </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                    <span className="flex items-center">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      {course.chapters} chapters
-                    </span>
-                    <span className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      {course.duration}
-                    </span>
-                    <span className="flex items-center">
-                      <Star className="w-4 h-4 mr-1 fill-yellow-400 text-yellow-400 dark:fill-yellow-300 dark:text-yellow-300" />
-                      {course.rating}
-                    </span>
-                  </div>
-                  <Button className="w-full" variant="outline">
-                    Start Learning
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </Reveal>
             ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link href="/workspace/explore">
-              <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
-                View All Courses
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-700 dark:to-purple-800">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-4">
-            Ready to Start Your Learning Journey?
+      {/* ------------------------------------------------------------ Features */}
+      <section id="features" className="py-20 md:py-28">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              What you actually get
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Every course is generated, structured and tracked the same way.
+            </p>
+          </Reveal>
+
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map((feature, i) => (
+              <Reveal key={feature.title} delay={(i % 3) * 110}>
+                <div className="group h-full rounded-2xl border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-muted transition-colors duration-300 group-hover:bg-blue-500/10">
+                    <feature.icon
+                      className="h-5 w-5 text-muted-foreground transition-colors duration-300 group-hover:text-blue-500"
+                      aria-hidden
+                    />
+                  </div>
+                  <h3 className="mb-2 font-semibold">{feature.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {feature.body}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------- Lesson shape teaser */}
+      <section className="border-y bg-muted/30 py-20 md:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 md:px-6 lg:grid-cols-2">
+          <Reveal>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Every lesson has the same spine
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+              Generated content is only useful if it&apos;s consistent. Each topic
+              is written to a fixed structure, so you always know where the
+              explanation ends and the example begins.
+            </p>
+            <ul className="mt-7 space-y-3">
+              {LESSON_SECTIONS.map((section, i) => (
+                <li key={section} className="flex items-center gap-3">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-500/10 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm font-medium">{section}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+
+          <Reveal delay={150}>
+            <div className="overflow-hidden rounded-2xl border bg-card shadow-lg">
+              <div className="border-b px-5 py-3 text-xs text-muted-foreground">
+                Chapter 4 · Exception Handling
+              </div>
+              <div className="space-y-4 p-6">
+                <h3 className="text-base font-semibold">Example</h3>
+                <pre className="overflow-x-auto rounded-lg border bg-muted p-4 text-[13px] leading-relaxed">
+                  <code>
+                    <span className="text-[color:var(--hl-keyword)]">try</span> {"{"}
+                    {"\n  "}
+                    <span className="text-[color:var(--hl-type)]">FileReader</span> f ={" "}
+                    <span className="text-[color:var(--hl-keyword)]">new</span>{" "}
+                    <span className="text-[color:var(--hl-function)]">FileReader</span>(
+                    <span className="text-[color:var(--hl-string)]">
+                      &quot;data.txt&quot;
+                    </span>
+                    );{"\n"}
+                    {"}"}{" "}
+                    <span className="text-[color:var(--hl-keyword)]">catch</span> (
+                    <span className="text-[color:var(--hl-type)]">IOException</span> e) {"{"}
+                    {"\n  "}
+                    <span className="text-[color:var(--hl-comment)]">
+                      {"// handle the failure"}
+                    </span>
+                    {"\n"}
+                    {"}"}
+                  </code>
+                </pre>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Code samples come out syntax highlighted, in both light and dark.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ----------------------------------------------------------------- CTA */}
+      <section className="relative overflow-hidden py-20 md:py-28">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-blue-900 dark:to-indigo-950"
+          aria-hidden
+        />
+        <Reveal className="mx-auto max-w-3xl px-4 text-center text-white md:px-6">
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+            What do you want to learn first?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
-            Join thousands of learners who are already advancing their careers with PromptEdu
+          <p className="mx-auto mt-4 max-w-xl text-lg text-blue-100">
+            Pick a topic, and have the whole course waiting for you in about a
+            minute.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!user && (
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <SignedOut>
               <Link href="/sign-up">
-                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 dark:bg-gray-100 dark:text-blue-700 dark:hover:bg-gray-200 px-8 py-3">
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="lg" variant="secondary" className="group w-full text-blue-700 sm:w-auto">
+                  Create your first course
+                  <ArrowRight
+                    className="transition-transform group-hover:translate-x-1"
+                    aria-hidden
+                  />
                 </Button>
               </Link>
-            )}
+            </SignedOut>
+            <SignedIn>
+              <Link href="/workspace">
+                <Button size="lg" variant="secondary" className="w-full text-blue-700 sm:w-auto">
+                  Create your next course
+                </Button>
+              </Link>
+            </SignedIn>
             <Link href="/workspace/explore">
-              <Button size="lg" variant="outline" className="border-white text-black dark:border-gray-200 dark:hover:bg-gray-200 dark:hover:text-blue-700 px-8 py-3">
-                Browse Courses
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white sm:w-auto"
+              >
+                Browse courses
               </Button>
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-2xl font-bold mb-4">PromptEdu</h3>
-              <p className="text-gray-400 dark:text-gray-500">
-                Empowering learners worldwide with AI-powered education and personalized learning experiences.
+      {/* -------------------------------------------------------------- Footer */}
+      <footer className="border-t py-12">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid gap-8 md:grid-cols-4">
+            <div className="md:col-span-2">
+              <h3 className="text-lg font-bold">PromptEdu</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">
+                Turn any topic into a structured course with lessons, examples
+                and videos.
               </p>
             </div>
+
             <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-gray-400 dark:text-gray-500">
-                <li><Link href="/workspace" className="hover:text-white dark:hover:text-gray-200">Dashboard</Link></li>
-                <li><Link href="/workspace/explore" className="hover:text-white dark:hover:text-gray-200">Courses</Link></li>
-                <li><Link href="/workspace/create-course" className="hover:text-white dark:hover:text-gray-200">Create Course</Link></li>
+              <h4 className="mb-3 text-sm font-semibold">Platform</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/workspace" className="transition-colors hover:text-foreground">
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/workspace/explore" className="transition-colors hover:text-foreground">
+                    Explore courses
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/workspace/my-learning" className="transition-colors hover:text-foreground">
+                    My learning
+                  </Link>
+                </li>
               </ul>
             </div>
+
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400 dark:text-gray-500">
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">Help Center</Link></li>
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">Contact Us</Link></li>
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">Community</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400 dark:text-gray-500">
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">About</Link></li>
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">Privacy</Link></li>
-                <li><Link href="#" className="hover:text-white dark:hover:text-gray-200">Terms</Link></li>
+              <h4 className="mb-3 text-sm font-semibold">Account</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <Link href="/sign-in" className="transition-colors hover:text-foreground">
+                    Sign in
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/sign-up" className="transition-colors hover:text-foreground">
+                    Create an account
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/workspace/billings" className="transition-colors hover:text-foreground">
+                    Billing
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-8 text-center text-gray-400 dark:text-gray-500">
-            <p>&copy; 2025 PromptEdu. All rights reserved.</p>
+
+          <div className="mt-10 border-t pt-6 text-center text-sm text-muted-foreground">
+            <p>© {new Date().getFullYear()} PromptEdu. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
-   
-    </>
   );
 }
