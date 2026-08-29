@@ -3,6 +3,7 @@ import { SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   ArrowRight,
   BookOpen,
+  BrainCircuit,
   Code2,
   FileText,
   ListChecks,
@@ -30,8 +31,8 @@ const STEPS = [
   },
   {
     icon: BookOpen,
-    title: "Lessons and videos fill in",
-    body: "Every topic is written out in full, and each chapter is matched with relevant videos from YouTube.",
+    title: "Lessons, videos and quizzes",
+    body: "Every topic is written out in full, matched with videos from YouTube, and backed by a quiz to test yourself.",
   },
 ];
 
@@ -45,6 +46,11 @@ const FEATURES = [
     icon: Youtube,
     title: "Videos on every chapter",
     body: "Each chapter comes with hand-picked YouTube videos, and you can pull more for any single topic.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "Quiz yourself on any topic",
+    body: "Ten multiple-choice questions written from the lesson you just read, with instant feedback and explanations.",
   },
   {
     icon: ListChecks,
