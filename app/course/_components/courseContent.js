@@ -85,6 +85,24 @@ export function getChapterVideos(chapter) {
   return Array.isArray(videos) ? videos.filter((v) => v?.videoId) : [];
 }
 
+/**
+ * True when a chapter has no lesson text — either its generation failed or it
+ * was never generated. Such chapters are saved as placeholders that still carry
+ * the chapter and topic names.
+ */
+export function isChapterEmpty(chapter) {
+  const topics = getTopics(chapter);
+  if (topics.length === 0) return true;
+  return topics.every((topic) => !topic?.content?.trim());
+}
+
+/** Indexes of every chapter currently missing its content. */
+export function getEmptyChapterIndexes(courseInfo) {
+  return getChapters(courseInfo)
+    .map((chapter, index) => (isChapterEmpty(chapter) ? index : -1))
+    .filter((index) => index !== -1);
+}
+
 /** The set of completed chapter indexes for the current enrollment. */
 export function getCompletedChapters(courseInfo) {
   const completed = courseInfo?.[0]?.enrollCourse?.completedChapters;

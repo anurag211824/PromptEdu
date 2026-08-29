@@ -118,6 +118,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Safety net against sideways scroll on small screens. `clip` rather than
+       `hidden` because `hidden` would make body a scroll container and break
+       the sticky headers. */
+    overflow-x: clip;
   }
 }
 
@@ -279,7 +283,10 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 0.15em 0.4em;
-  white-space: nowrap;
+  /* Must be able to wrap: a long identifier or command in inline code would
+     otherwise push the whole page wider than a phone screen. */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Code blocks.
@@ -345,12 +352,22 @@
   -moz-tab-size: 2;
 }
 
-/* Inside the wrapper the <pre> is flush - the wrapper carries the chrome. */
+/* Inside the wrapper the <pre> is flush - the wrapper carries the chrome, and
+   react-syntax-highlighter supplies its own padding and token colours. */
 .lesson-prose .code-block pre {
-  margin: 0;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+/* The highlighter colours tokens with inline styles, so nothing here may set a
+   colour on its output - only layout. */
+.lesson-prose .code-block code {
+  background: none;
   border: none;
-  border-radius: 0;
-  padding: 1em 1.15em;
+  padding: 0;
+  font-size: inherit;
 }
 
 .lesson-prose pre code {
@@ -377,14 +394,21 @@
   margin-bottom: 0;
 }
 
-/* Tables scroll inside themselves rather than widening the page. */
-.lesson-prose table {
-  display: block;
-  width: 100%;
+/* GFM tables scroll inside a wrapper rather than widening the page. */
+.lesson-table-wrap {
   overflow-x: auto;
-  border-collapse: collapse;
   margin: 1.4em 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.lesson-prose table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.925rem;
+}
+.lesson-table-wrap > table {
+  margin: 0;
 }
 .lesson-prose th,
 .lesson-prose td {
@@ -496,106 +520,60 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Syntax highlighting.
-
-   highlight.js only tags tokens with `hljs-*` classes; the colours are ours, so
-   they are defined here against the theme rather than by importing one of the
-   library's light-or-dark stylesheets. Palette follows GitHub's, which is
-   already contrast-checked in both modes.
+   Quiz motion.
 --------------------------------------------------------------------------- */
-:root {
-  --hl-comment: #6e7781;
-  --hl-keyword: #cf222e;
-  --hl-string: #0a3069;
-  --hl-number: #0550ae;
-  --hl-function: #8250df;
-  --hl-type: #953800;
-  --hl-tag: #116329;
-  --hl-punctuation: #24292f;
+@keyframes quiz-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
 }
 
-.dark {
-  --hl-comment: #8b949e;
-  --hl-keyword: #ff7b72;
-  --hl-string: #a5d6ff;
-  --hl-number: #79c0ff;
-  --hl-function: #d2a8ff;
-  --hl-type: #ffa657;
-  --hl-tag: #7ee787;
-  --hl-punctuation: #c9d1d9;
+@keyframes quiz-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.035); }
+  100% { transform: scale(1); }
 }
 
-.lesson-prose .hljs {
-  color: var(--hl-punctuation);
-  background: none;
+@keyframes quiz-slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
 }
 
-.lesson-prose .hljs-comment,
-.lesson-prose .hljs-quote {
-  color: var(--hl-comment);
-  font-style: italic;
+@keyframes quiz-confetti-fall {
+  0% { opacity: 1; transform: translateY(-10vh) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(105vh) rotate(720deg); }
 }
 
-.lesson-prose .hljs-keyword,
-.lesson-prose .hljs-selector-tag,
-.lesson-prose .hljs-literal,
-.lesson-prose .hljs-doctag,
-.lesson-prose .hljs-operator {
-  color: var(--hl-keyword);
+@keyframes quiz-ring {
+  from { stroke-dashoffset: var(--ring-circumference); }
+  to { stroke-dashoffset: var(--ring-offset); }
 }
 
-.lesson-prose .hljs-string,
-.lesson-prose .hljs-regexp,
-.lesson-prose .hljs-addition,
-.lesson-prose .hljs-attribute,
-.lesson-prose .hljs-meta .hljs-string {
-  color: var(--hl-string);
+.quiz-confetti-piece {
+  position: fixed;
+  top: 0;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0;
 }
 
-.lesson-prose .hljs-number,
-.lesson-prose .hljs-symbol,
-.lesson-prose .hljs-bullet,
-.lesson-prose .hljs-variable,
-.lesson-prose .hljs-template-variable,
-.lesson-prose .hljs-selector-attr,
-.lesson-prose .hljs-selector-pseudo {
-  color: var(--hl-number);
+@media (prefers-reduced-motion: no-preference) {
+  .animate-quiz-shake { animation: quiz-shake 0.45s ease-in-out; }
+  .animate-quiz-pop { animation: quiz-pop 0.35s ease-out; }
+  .animate-quiz-slide-up { animation: quiz-slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .quiz-confetti-piece { animation: quiz-confetti-fall 2.6s linear forwards; }
+  .quiz-ring-progress { animation: quiz-ring 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 }
 
-.lesson-prose .hljs-title,
-.lesson-prose .hljs-title.function_,
-.lesson-prose .hljs-section,
-.lesson-prose .hljs-built_in {
-  color: var(--hl-function);
+/* With reduced motion the ring simply renders at its final value. */
+@media (prefers-reduced-motion: reduce) {
+  .quiz-ring-progress { stroke-dashoffset: var(--ring-offset); }
+  .quiz-confetti-piece { display: none; }
 }
 
-.lesson-prose .hljs-title.class_,
-.lesson-prose .hljs-type,
-.lesson-prose .hljs-class .hljs-title,
-.lesson-prose .hljs-params,
-.lesson-prose .hljs-attr,
-.lesson-prose .hljs-property,
-.lesson-prose .hljs-selector-class,
-.lesson-prose .hljs-selector-id {
-  color: var(--hl-type);
-}
 
-.lesson-prose .hljs-tag,
-.lesson-prose .hljs-name,
-.lesson-prose .hljs-meta,
-.lesson-prose .hljs-meta .hljs-keyword {
-  color: var(--hl-tag);
-}
-
-.lesson-prose .hljs-deletion {
-  color: var(--hl-keyword);
-}
-.lesson-prose .hljs-emphasis {
-  font-style: italic;
-}
-.lesson-prose .hljs-strong {
-  font-weight: 650;
-}
-.lesson-prose .hljs-link {
-  text-decoration: underline;
-}

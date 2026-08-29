@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   ArrowRight,
@@ -94,14 +93,6 @@ export default function Home() {
 
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 py-20 md:px-6 lg:grid-cols-2 lg:py-28">
           <Reveal>
-            <Badge
-              variant="secondary"
-              className="mb-5 gap-1.5 rounded-full px-3 py-1"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              Powered by Gemini
-            </Badge>
-
             <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-6xl">
               Turn any topic into a{" "}
               <span className="bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 bg-clip-text text-transparent">

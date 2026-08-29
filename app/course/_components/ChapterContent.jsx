@@ -4,10 +4,14 @@ import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
 import {
   ArrowLeft,
   ArrowRight,
+  BookmarkCheck,
+  BrainCircuit,
   CheckCircle,
   ChevronDown,
+  FileWarning,
   Loader2Icon,
   PartyPopper,
+  RefreshCw,
   Youtube,
   X,
 } from "lucide-react";
@@ -20,8 +24,10 @@ import {
   getChapterVideos,
   getChapters,
   getCompletedChapters,
+  getEmptyChapterIndexes,
   getTopicName,
   getTopics,
+  isChapterEmpty,
 } from "./courseContent";
 
 function YouTubeEmbed({ videoId, title }) {
@@ -48,6 +54,7 @@ function YouTubeEmbed({ videoId, title }) {
 
 function ChapterContent({ courseInfo, refreshData }) {
   const [loading, setLoading] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [showVideos, setShowVideos] = useState(false);
   const { selectedChapterIndex, setSelectedChapterIndex } =
     useContext(SelectedChapterIndex);
@@ -63,6 +70,65 @@ function ChapterContent({ courseInfo, refreshData }) {
   const hasPrev = selectedChapterIndex > 0;
   const hasNext = selectedChapterIndex < chapters.length - 1;
   const courseId = courseInfo?.[0]?.courses?.id;
+  const courseCid = courseInfo?.[0]?.courses?.cid;
+
+  const chapterMissing = chapter ? isChapterEmpty(chapter) : false;
+  const emptyChapterIndexes = getEmptyChapterIndexes(courseInfo);
+
+  // Videos the learner saved against this chapter, keyed by topic.
+  const [savedVideos, setSavedVideos] = useState([]);
+
+  useEffect(() => {
+    if (!courseCid) return;
+    let cancelled = false;
+
+    fetch(
+      `/api/saved-videos?courseId=${encodeURIComponent(courseCid)}&chapter=${selectedChapterIndex}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) setSavedVideos(data.data ?? []);
+      })
+      .catch((error) => console.error("Failed to load saved videos:", error));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [courseCid, selectedChapterIndex]);
+
+  const savedForTopic = (topicIndex) =>
+    savedVideos.filter((video) => video.topicIndex === topicIndex);
+
+  const regenerate = async (indexes) => {
+    try {
+      setRegenerating(true);
+      const response = await fetch("/api/regenerate-chapters", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ courseId: courseCid, chapterIndexes: indexes }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        await refreshData();
+        toast.success(
+          data.regenerated === 1
+            ? "Chapter generated"
+            : `Generated ${data.regenerated} chapters`
+        );
+        if (data.failed?.length) {
+          toast.warning(`${data.failed.length} still failed — try again shortly.`);
+        }
+      } else {
+        toast.error(data.error ?? "Could not generate. Please try again.");
+      }
+    } catch (error) {
+      console.error("Regeneration failed:", error);
+      toast.error("Could not generate. Please check your connection.");
+    } finally {
+      setRegenerating(false);
+    }
+  };
 
   // Moving between chapters should always start the reader at the top,
   // and the videos panel shouldn't stay open across chapters.
@@ -177,6 +243,49 @@ function ChapterContent({ courseInfo, refreshData }) {
           )}
         </div>
 
+        {/* This chapter's content failed to generate (or was never generated). */}
+        {chapterMissing && (
+          <div className="mt-5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4">
+            <div className="flex items-start gap-3">
+              <FileWarning
+                className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-500"
+                aria-hidden
+              />
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold">
+                  This chapter has no lessons yet
+                </p>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    disabled={regenerating}
+                    onClick={() => regenerate([selectedChapterIndex])}
+                  >
+                    {regenerating ? (
+                      <Loader2Icon className="animate-spin" aria-hidden />
+                    ) : (
+                      <RefreshCw aria-hidden />
+                    )}
+                    Generate this chapter
+                  </Button>
+
+                  {emptyChapterIndexes.length > 1 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={regenerating}
+                      onClick={() => regenerate(emptyChapterIndexes)}
+                    >
+                      Generate all {emptyChapterIndexes.length} missing chapters
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showVideos && videos.length > 0 && (
           <div className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {videos.map((video, index) => (
@@ -204,21 +313,73 @@ function ChapterContent({ courseInfo, refreshData }) {
               className="scroll-mt-20 py-8"
             >
               <div className="mb-4 flex items-start justify-between gap-4">
-                <h2 className="text-xl font-semibold leading-snug">
+                <h2 className="min-w-0 break-words text-xl font-semibold leading-snug">
                   <span className="mr-2 text-muted-foreground tabular-nums">
                     {selectedChapterIndex + 1}.{index + 1}
                   </span>
                   {getTopicName(item, index)}
                 </h2>
-                <Link
-                  href={`/youtube/${encodeURIComponent(getTopicName(item, index))}`}
-                  className="shrink-0"
-                >
-                  <Button variant="ghost" size="sm" title="Find videos on this topic">
-                    <Youtube aria-hidden />
-                    <span className="sr-only sm:not-sr-only">Videos</span>
-                  </Button>
-                </Link>
+                <div className="flex shrink-0 items-center gap-1">
+                  <Link
+                    // Carry the course/chapter/topic through so videos can be
+                    // saved back against exactly where the learner was.
+                    href={
+                      `/youtube/${encodeURIComponent(getTopicName(item, index))}` +
+                      `?courseId=${encodeURIComponent(courseCid ?? "")}` +
+                      `&chapter=${selectedChapterIndex}&topic=${index}`
+                    }
+                  >
+                    <Button variant="ghost" size="sm" title="Find videos on this topic">
+                      <Youtube aria-hidden />
+                      <span className="sr-only sm:not-sr-only">Videos</span>
+                    </Button>
+                  </Link>
+
+                  {/* Quizzes are generated from the lesson text, so only offer
+                      one where there is content to build from. */}
+                  {item.content && (
+                    <Link
+                      href={
+                        `/course/${courseCid}/quiz` +
+                        `?chapter=${selectedChapterIndex}&topic=${index}` +
+                        `&topicName=${encodeURIComponent(getTopicName(item, index))}`
+                      }
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Test yourself on this topic"
+                      >
+                        <BrainCircuit aria-hidden />
+                        <span className="sr-only sm:not-sr-only">Quiz</span>
+                      </Button>
+                    </Link>
+                  )}
+
+                  {savedForTopic(index).length > 0 && (
+                    <Link
+                      href={
+                        `/course/${courseCid}/saved` +
+                        `?chapter=${selectedChapterIndex}&topic=${index}` +
+                        `&topicName=${encodeURIComponent(getTopicName(item, index))}`
+                      }
+                    >
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Videos you saved for this topic"
+                      >
+                        <BookmarkCheck
+                          className="text-green-600 dark:text-green-500"
+                          aria-hidden
+                        />
+                        <span className="sr-only sm:not-sr-only">
+                          Saved ({savedForTopic(index).length})
+                        </span>
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
 
               {item.content ? (
@@ -242,7 +403,7 @@ function ChapterContent({ courseInfo, refreshData }) {
           <button
             type="button"
             onClick={() => setSelectedChapterIndex(selectedChapterIndex - 1)}
-            className="group flex flex-1 items-center gap-3 rounded-lg border p-4 text-left transition-colors hover:bg-accent"
+            className="group flex min-w-0 flex-1 items-center gap-3 rounded-lg border p-4 text-left transition-colors hover:bg-accent"
           >
             <ArrowLeft className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
             <span className="min-w-0">
@@ -260,7 +421,7 @@ function ChapterContent({ courseInfo, refreshData }) {
           <button
             type="button"
             onClick={() => setSelectedChapterIndex(selectedChapterIndex + 1)}
-            className="group flex flex-1 items-center justify-end gap-3 rounded-lg border p-4 text-right transition-colors hover:bg-accent"
+            className="group flex min-w-0 flex-1 items-center justify-end gap-3 rounded-lg border p-4 text-right transition-colors hover:bg-accent"
           >
             <span className="min-w-0">
               <span className="block text-xs text-muted-foreground">Next</span>

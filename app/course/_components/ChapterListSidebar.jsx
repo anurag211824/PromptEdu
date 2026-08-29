@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { SelectedChapterIndex } from "@/contexts/SelectedChapterIndex";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, FileWarning } from "lucide-react";
 import {
   getChapterName,
   getChapters,
   getCompletedChapters,
   getTopicName,
   getTopics,
+  isChapterEmpty,
 } from "./courseContent";
 
 function ChapterListSidebar({ courseInfo, onNavigate }) {
@@ -76,6 +77,7 @@ function ChapterListSidebar({ courseInfo, onNavigate }) {
             {chapters.map((chapter, cIndex) => {
               const isActive = cIndex === selectedChapterIndex;
               const isComplete = completedChapters.includes(cIndex);
+              const isMissing = isChapterEmpty(chapter);
               const topics = getTopics(chapter);
 
               return (
@@ -90,7 +92,12 @@ function ChapterListSidebar({ courseInfo, onNavigate }) {
                     }`}
                   >
                     <div className="flex min-w-0 items-start gap-2.5">
-                      {isComplete ? (
+                      {isMissing ? (
+                        <FileWarning
+                          className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-500"
+                          aria-label="Content not generated"
+                        />
+                      ) : isComplete ? (
                         <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-500" />
                       ) : (
                         <Circle className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/50" />

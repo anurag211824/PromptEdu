@@ -1,5 +1,4 @@
-import { boolean } from "drizzle-orm/gel-core";
-import { integer, pgTable, varchar,json } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, varchar, json, timestamp } from "drizzle-orm/pg-core";
 
 
 export const usersTable = pgTable("users", {
@@ -32,6 +31,25 @@ export const enrollCourseTable = pgTable("enrollCourse",{
   userEmail: varchar("userEmail").references(() => usersTable.email),
   completedChapters:json(),
 })
+
+// Videos a learner has saved to come back to, pinned to the exact course,
+// chapter and topic they were studying when they saved it.
+export const savedVideoTable = pgTable("savedVideo", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  userEmail: varchar("userEmail").references(() => usersTable.email).notNull(),
+  courseCid: varchar("courseCid").notNull(),
+  chapterIndex: integer("chapterIndex").notNull(),
+  topicIndex: integer("topicIndex").notNull(),
+  topicName: varchar("topicName"),
+  videoId: varchar("videoId").notNull(),
+  videoTitle: varchar("videoTitle"),
+  channelTitle: varchar("channelTitle"),
+  // Playback position in seconds, so "resume where I stopped" works.
+  resumeSeconds: integer("resumeSeconds").default(0),
+  note: varchar("note"),
+  watched: boolean().default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
 
 
 
