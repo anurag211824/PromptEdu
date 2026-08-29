@@ -16,6 +16,7 @@ import {
   Check,
   Loader2Icon,
   RefreshCw,
+  RotateCcw,
   Sparkles,
   Trophy,
   X,
@@ -131,7 +132,17 @@ function QuizView() {
   const startedAt = useRef(Date.now());
   const [elapsed, setElapsed] = useState(0);
 
-  const loadQuiz = useCallback(async () => {
+  const restart = useCallback(() => {
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setFinished(false);
+    setElapsed(0);
+    startedAt.current = Date.now();
+  }, []);
+
+  const loadQuiz = useCallback(
+    async ({ refresh = false } = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -148,6 +159,7 @@ function QuizView() {
           courseId,
           chapterIndex: Number(chapter),
           topicIndex: Number(topic),
+          refresh,
         }),
       });
       const data = await response.json();
@@ -164,7 +176,9 @@ function QuizView() {
     } finally {
       setLoading(false);
     }
-  }, [courseId, chapter, topic]);
+    },
+    [courseId, chapter, topic]
+  );
 
   useEffect(() => {
     loadQuiz();
@@ -269,7 +283,7 @@ function QuizView() {
         <h1 className="text-lg font-semibold">Couldn&apos;t build the quiz</h1>
         <p className="max-w-sm text-sm text-muted-foreground">{error}</p>
         <div className="flex gap-2">
-          <Button onClick={loadQuiz}>
+          <Button onClick={() => loadQuiz()}>
             <RefreshCw aria-hidden />
             Try again
           </Button>
@@ -319,11 +333,17 @@ function QuizView() {
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Button onClick={loadQuiz}>
-                <RefreshCw aria-hidden />
-                New quiz
+              {/* Retake is instant — the same cached questions, reset. */}
+              <Button onClick={restart}>
+                <RotateCcw aria-hidden />
+                Retake
               </Button>
-              <Button variant="outline" onClick={backHref}>
+              {/* Regenerating replaces the cached set with fresh questions. */}
+              <Button variant="outline" onClick={() => loadQuiz({ refresh: true })}>
+                <RefreshCw aria-hidden />
+                New questions
+              </Button>
+              <Button variant="ghost" onClick={backHref}>
                 <ArrowLeft aria-hidden />
                 Back to the topic
               </Button>

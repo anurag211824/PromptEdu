@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/config/db";
-import { coursesTable } from "@/config/schema";
+import { coursesTable, quizTable } from "@/config/schema";
 import { invokeLlmJson } from "@/lib/llm";
 
 export const maxDuration = 60;
@@ -85,12 +85,39 @@ export async function POST(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { courseId, chapterIndex, topicIndex } = await req.json();
+    const { courseId, chapterIndex, topicIndex, refresh } = await req.json();
     if (!courseId) {
       return NextResponse.json(
         { success: false, error: "A courseId is required." },
         { status: 400 }
       );
+    }
+
+    const chapterNum = Number(chapterIndex);
+    const topicNum = Number(topicIndex);
+
+    // Serve the cached quiz unless a fresh set was explicitly requested.
+    if (!refresh) {
+      const [cached] = await db
+        .select()
+        .from(quizTable)
+        .where(
+          and(
+            eq(quizTable.courseCid, courseId),
+            eq(quizTable.chapterIndex, chapterNum),
+            eq(quizTable.topicIndex, topicNum)
+          )
+        );
+
+      if (cached && Array.isArray(cached.questions) && cached.questions.length) {
+        return NextResponse.json({
+          success: true,
+          cached: true,
+          topic: cached.topicName,
+          chapterName: cached.chapterName,
+          questions: cached.questions,
+        });
+      }
     }
 
     const [course] = await db
@@ -106,8 +133,8 @@ export async function POST(req) {
     }
 
     const content = Array.isArray(course.courseContent) ? course.courseContent : [];
-    const chapter = content[Number(chapterIndex)]?.courseData;
-    const topic = chapter?.topics?.[Number(topicIndex)];
+    const chapter = content[chapterNum]?.courseData;
+    const topic = chapter?.topics?.[topicNum];
 
     if (!topic) {
       return NextResponse.json(
@@ -147,8 +174,40 @@ export async function POST(req) {
       );
     }
 
+    // Cache it so the next learner on this topic gets it instantly. A refresh
+    // overwrites the stored set rather than adding a duplicate.
+    try {
+      await db
+        .insert(quizTable)
+        .values({
+          courseCid: courseId,
+          chapterIndex: chapterNum,
+          topicIndex: topicNum,
+          topicName: topic.topic,
+          chapterName: chapter?.chapterName,
+          questions,
+        })
+        .onConflictDoUpdate({
+          target: [
+            quizTable.courseCid,
+            quizTable.chapterIndex,
+            quizTable.topicIndex,
+          ],
+          set: {
+            questions,
+            topicName: topic.topic,
+            chapterName: chapter?.chapterName,
+            createdAt: new Date(),
+          },
+        });
+    } catch (cacheError) {
+      // A cache write failure must not cost the learner their quiz.
+      console.error("Failed to cache quiz:", cacheError);
+    }
+
     return NextResponse.json({
       success: true,
+      cached: false,
       topic: topic.topic,
       chapterName: chapter?.chapterName,
       questions,

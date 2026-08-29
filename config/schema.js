@@ -32,6 +32,20 @@ export const enrollCourseTable = pgTable("enrollCourse",{
   completedChapters:json(),
 })
 
+// Generated quizzes, cached per course/chapter/topic so the same topic is not
+// re-generated for every learner who opens it. Not user-scoped: the questions
+// are about the material, so everyone studying that topic gets the same quiz.
+export const quizTable = pgTable("quiz", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  courseCid: varchar("courseCid").notNull(),
+  chapterIndex: integer("chapterIndex").notNull(),
+  topicIndex: integer("topicIndex").notNull(),
+  topicName: varchar("topicName"),
+  chapterName: varchar("chapterName"),
+  questions: json().notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
 // Videos a learner has saved to come back to, pinned to the exact course,
 // chapter and topic they were studying when they saved it.
 export const savedVideoTable = pgTable("savedVideo", {
